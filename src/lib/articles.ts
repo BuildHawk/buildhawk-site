@@ -1,3 +1,5 @@
+import { getMarkdownArticles } from "./markdown-articles";
+
 // Articles published on /insights. Order does not matter; index sorts by date.
 // Each article body uses a tiny markdown-like syntax handled by the renderer:
 //   ## H2 heading
@@ -6,6 +8,10 @@
 //   • bullet
 //   --- (horizontal rule)
 //   Plain paragraphs are paragraphs.
+//
+// File-based articles: drop a .md file into content/blog/ with the required
+// frontmatter fields (slug, title, dek, authorId, date, readingTime, category,
+// cover) and it will be merged at build time by getMarkdownArticles().
 
 export type Author = {
   id: "nathan" | "jc";
@@ -548,18 +554,27 @@ For now, Hawktress is how BuildHawk makes the next estimate more accurate than t
   },
 ];
 
+// Merges hardcoded articles with any .md files in content/blog/
+function getAllArticles(): Article[] {
+  const mdArticles = getMarkdownArticles();
+  const mdSlugs = new Set(mdArticles.map((a) => a.slug));
+  // md file takes precedence over a hardcoded entry with the same slug
+  return [...articles.filter((a) => !mdSlugs.has(a.slug)), ...mdArticles];
+}
+
 export function getArticleBySlug(slug: string): Article | undefined {
-  return articles.find((a) => a.slug === slug);
+  return getAllArticles().find((a) => a.slug === slug);
 }
 
 export function getSortedArticles(): Article[] {
-  return [...articles].sort((a, b) => (a.date < b.date ? 1 : -1));
+  return getAllArticles().sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
 export function getRelatedArticles(slug: string, count = 2): Article[] {
-  const current = getArticleBySlug(slug);
+  const all = getAllArticles();
+  const current = all.find((a) => a.slug === slug);
   if (!current) return [];
-  return [...articles]
+  return [...all]
     .filter((a) => a.slug !== slug)
     .sort((a, b) => {
       const aSameCat = a.category === current.category ? 0 : 1;

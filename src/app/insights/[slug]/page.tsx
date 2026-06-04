@@ -6,16 +6,16 @@ import Nav from "@/components/Nav";
 import ArticleBody from "@/components/blog/ArticleBody";
 import ArticleCard from "@/components/blog/ArticleCard";
 import {
-  articles,
   authors,
   getArticleBySlug,
   getRelatedArticles,
+  getSortedArticles,
 } from "@/lib/articles";
 
 type Params = Promise<{ slug: string }>;
 
 export async function generateStaticParams() {
-  return articles.map((a) => ({ slug: a.slug }));
+  return getSortedArticles().map((a) => ({ slug: a.slug }));
 }
 
 export async function generateMetadata(
