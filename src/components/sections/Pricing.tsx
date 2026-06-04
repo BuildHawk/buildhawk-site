@@ -199,6 +199,39 @@ export default function Pricing() {
             </div>
           </div>
         </div>
+
+        {/* Homeowner callout: Peace of Mind quote review */}
+        <a
+          href="/peace-of-mind"
+          className="group mt-10 md:mt-14 flex flex-col sm:flex-row sm:items-center justify-between gap-5 rounded-[10px] border border-bh-steel/60 bg-bh-cloud p-6 md:p-8 hover:border-bh-orange transition-colors"
+        >
+          <div>
+            <p className="text-[11px] tracking-[0.2em] uppercase text-bh-orange mb-2">
+              Buying, not building?
+            </p>
+            <p className="text-[18px] md:text-[22px] font-medium tracking-[-0.015em] text-bh-black leading-[1.25]">
+              Peace of Mind: independent quote review for homeowners.
+            </p>
+            <p className="mt-2 text-[13px] md:text-[14px] leading-[1.5] text-bh-graphite max-w-xl">
+              Before you sign a building contract, we line your builder quotes
+              up apples for apples and flag the gaps. $499 + GST, fully online.
+            </p>
+          </div>
+          <span className="inline-flex flex-none items-center gap-3 rounded-[8px] pl-5 pr-2 h-11 text-[13px] tracking-[-0.005em] font-medium bg-bh-ink text-bh-paper group-hover:bg-bh-orange transition-colors">
+            Learn more
+            <span className="inline-flex items-center justify-center rounded-full w-7 h-7 bg-bh-paper/15">
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden>
+                <path
+                  d="M3 7h8m0 0L7.5 3.5M11 7l-3.5 3.5"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+          </span>
+        </a>
       </div>
     </section>
   );

@@ -7,6 +7,7 @@ const links = [
   { href: "/#hawktress", label: "Hawktress", section: "hawktress" },
   { href: "/#how", label: "How It Works", section: "how" },
   { href: "/#pricing", label: "Pricing", section: "pricing" },
+  { href: "/peace-of-mind", label: "Peace of Mind", section: null },
   { href: "/partners", label: "Partners", section: null },
   { href: "/articles", label: "Articles", section: null },
   { href: "/faq", label: "FAQ", section: null },
