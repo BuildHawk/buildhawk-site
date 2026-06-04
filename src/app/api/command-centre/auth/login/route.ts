@@ -26,10 +26,10 @@ import { recordAudit } from "@/lib/audit";
 
 export const runtime = "nodejs";
 
-const GENERIC_FAIL = NextResponse.json(
-  { ok: false, error: "Email or password is incorrect" },
-  { status: 401 },
-);
+// Return a fresh Response per call; reusing a NextResponse instance consumes
+// its body stream on first send and subsequent requests get an empty body.
+const genericFail = () =>
+  NextResponse.json({ ok: false, error: "Email or password is incorrect" }, { status: 401 });
 
 export async function POST(req: Request) {
   if (!isAuthConfigured()) {
@@ -47,25 +47,25 @@ export async function POST(req: Request) {
   const email = typeof body.email === "string" ? normalizeEmail(body.email) : "";
   const password = typeof body.password === "string" ? body.password : "";
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return GENERIC_FAIL;
+    return genericFail();
   }
   if (!password || password.length < 8) {
-    return GENERIC_FAIL;
+    return genericFail();
   }
   if (!isSigninAllowed(email)) {
-    return GENERIC_FAIL;
+    return genericFail();
   }
 
   const user = (
     await db().select().from(users).where(eq(users.email, email)).limit(1)
   )[0];
   if (!user || !user.passwordHash) {
-    return GENERIC_FAIL;
+    return genericFail();
   }
 
   const ok = await verifyPassword(password, user.passwordHash);
   if (!ok) {
-    return GENERIC_FAIL;
+    return genericFail();
   }
 
   const memberRows = await listUserTenants(user.id);

@@ -68,10 +68,18 @@ export const featuredCaseStudy: FeaturedCaseStudy = {
 
 export const partners: Partner[] = [
   {
+    name: "Wunderbuild",
+    src: "/logos/wunderbuild.svg",
+    width: 296,
+    height: 58,
+    url: "https://www.wunderbuild.com/",
+  },
+  {
     name: "Homes By NH",
     src: "/logos/homes-by-nh.webp",
     width: 320,
     height: 120,
+    url: "https://www.homesbynh.com.au/",
     darkTile: true,
   },
   {
@@ -79,12 +87,14 @@ export const partners: Partner[] = [
     src: "/logos/ockenden-group.png",
     width: 320,
     height: 120,
+    url: "https://ockendengroup.com/",
   },
   {
     name: "Buena Vista Homes",
     src: "/logos/buena-vista-homes.png",
     width: 320,
     height: 120,
+    url: "https://buenavistahomes.com.au/",
     darkTile: true,
   },
   {
@@ -104,8 +114,20 @@ export const partners: Partner[] = [
     url: "https://www.mindset365.com.au/",
     badge: "Mental performance",
   },
-  { name: "Softriver", src: "/logos/softriver.svg", width: 320, height: 80 },
-  { name: "Tapang Group", src: "/logos/tapang-group.svg", width: 320, height: 80 },
+  {
+    name: "Softriver",
+    src: "/logos/softriver.svg",
+    width: 320,
+    height: 80,
+    url: "https://www.softriver.co/",
+  },
+  {
+    name: "Tapang Group",
+    src: "/logos/tapang-group.svg",
+    width: 320,
+    height: 80,
+    url: "https://www.facebook.com/p/AKT-Services-100075861475134/",
+  },
 ];
 
 export const accreditations: Accreditation[] = [
