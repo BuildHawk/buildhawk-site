@@ -174,6 +174,40 @@ export default function Pricing() {
           ))}
         </div>
 
+        {/* Builder callout: full Commercial Support structure */}
+        <a
+          href="/commercial-support"
+          className="group mt-8 md:mt-12 flex flex-col sm:flex-row sm:items-center justify-between gap-5 rounded-[10px] bg-bh-ink text-bh-paper p-6 md:p-8 transition-shadow hover:shadow-[0_24px_50px_-24px_rgba(222,81,35,0.45)]"
+        >
+          <div>
+            <p className="text-[11px] tracking-[0.2em] uppercase text-bh-orange mb-2">
+              Priced to your turnover
+            </p>
+            <p className="text-[18px] md:text-[22px] font-medium tracking-[-0.015em] text-bh-paper leading-[1.25]">
+              Commercial support, built around every active project.
+            </p>
+            <p className="mt-2 text-[13px] md:text-[14px] leading-[1.5] text-bh-steel max-w-xl">
+              See the full structure: three tiers from a single detailed
+              estimate to dedicated oversight across your pipeline. Foundation,
+              Growth and Performance.
+            </p>
+          </div>
+          <span className="inline-flex flex-none items-center gap-3 rounded-[8px] pl-5 pr-2 h-11 text-[13px] tracking-[-0.005em] font-medium bg-bh-orange text-bh-paper group-hover:bg-bh-orange-700 transition-colors">
+            View commercial support
+            <span className="inline-flex items-center justify-center rounded-full w-7 h-7 bg-bh-paper/20">
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden>
+                <path
+                  d="M3 7h8m0 0L7.5 3.5M11 7l-3.5 3.5"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+          </span>
+        </a>
+
         {/* Footnote */}
         <div className="mt-10 md:mt-12 grid grid-cols-12 gap-6 md:gap-8">
           <div className="col-span-12 md:col-span-9 md:col-start-4">
