@@ -341,6 +341,41 @@ export const benchmarkSamples = pgTable(
   }),
 );
 
+/* ------------------------------------------------------------------ */
+/* CMS articles                                                       */
+/* ------------------------------------------------------------------ */
+
+export const cmsArticles = pgTable(
+  "cms_articles",
+  {
+    id: text("id").primaryKey(),
+    slug: text("slug").notNull(),
+    title: text("title").notNull(),
+    dek: text("dek").notNull(),
+    authorId: text("author_id").notNull().default("nathan"),
+    date: text("date").notNull(),
+    readingTime: integer("reading_time").notNull().default(5),
+    category: text("category").notNull().default("Field Notes"),
+    cover: text("cover").notNull(),
+    body: text("body").notNull(),
+    youtubeId: text("youtube_id"),
+    videoLabel: text("video_label"),
+    videoSrc: text("video_src"),
+    videoPoster: text("video_poster"),
+    videoCredit: text("video_credit"),
+    published: boolean("published").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .default(sql`now()`),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    slugIdx: uniqueIndex("cms_articles_slug_idx").on(t.slug),
+  }),
+);
+
 export type Tenant = typeof tenants.$inferSelect;
 export type User = typeof users.$inferSelect;
 export type Membership = typeof memberships.$inferSelect;
@@ -350,3 +385,4 @@ export type AuditEvent = typeof auditEvents.$inferSelect;
 export type MagicLink = typeof magicLinks.$inferSelect;
 export type UsageCounter = typeof usageCounters.$inferSelect;
 export type BenchmarkSample = typeof benchmarkSamples.$inferSelect;
+export type CmsArticle = typeof cmsArticles.$inferSelect;

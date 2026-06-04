@@ -2,8 +2,8 @@ import Link from "next/link";
 import ArticleCard from "@/components/blog/ArticleCard";
 import { getSortedArticles } from "@/lib/articles";
 
-export default function Insights() {
-  const recent = getSortedArticles().slice(0, 3);
+export default async function Insights() {
+  const recent = (await getSortedArticles()).slice(0, 3);
   return (
     <section className="relative bg-bh-white py-16 md:py-36">
       <div className="mx-auto max-w-[1480px] px-6 md:px-10">

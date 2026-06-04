@@ -1,4 +1,5 @@
 import { getMarkdownArticles } from "./markdown-articles";
+import { getPublishedDbArticles } from "./db-articles";
 
 // Articles published on /insights. Order does not matter; index sorts by date.
 // Each article body uses a tiny markdown-like syntax handled by the renderer:
@@ -554,24 +555,31 @@ For now, Hawktress is how BuildHawk makes the next estimate more accurate than t
   },
 ];
 
-// Merges hardcoded articles with any .md files in content/blog/
-function getAllArticles(): Article[] {
-  const mdArticles = getMarkdownArticles();
+// Priority: DB articles > markdown files > hardcoded. Same slug = higher wins.
+async function getAllArticles(): Promise<Article[]> {
+  const [mdArticles, dbArticles] = await Promise.all([
+    Promise.resolve(getMarkdownArticles()),
+    getPublishedDbArticles(),
+  ]);
+  const dbSlugs = new Set(dbArticles.map((a) => a.slug));
   const mdSlugs = new Set(mdArticles.map((a) => a.slug));
-  // md file takes precedence over a hardcoded entry with the same slug
-  return [...articles.filter((a) => !mdSlugs.has(a.slug)), ...mdArticles];
+  return [
+    ...articles.filter((a) => !mdSlugs.has(a.slug) && !dbSlugs.has(a.slug)),
+    ...mdArticles.filter((a) => !dbSlugs.has(a.slug)),
+    ...dbArticles,
+  ];
 }
 
-export function getArticleBySlug(slug: string): Article | undefined {
-  return getAllArticles().find((a) => a.slug === slug);
+export async function getArticleBySlug(slug: string): Promise<Article | undefined> {
+  return (await getAllArticles()).find((a) => a.slug === slug);
 }
 
-export function getSortedArticles(): Article[] {
-  return getAllArticles().sort((a, b) => (a.date < b.date ? 1 : -1));
+export async function getSortedArticles(): Promise<Article[]> {
+  return (await getAllArticles()).sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
-export function getRelatedArticles(slug: string, count = 2): Article[] {
-  const all = getAllArticles();
+export async function getRelatedArticles(slug: string, count = 2): Promise<Article[]> {
+  const all = await getAllArticles();
   const current = all.find((a) => a.slug === slug);
   if (!current) return [];
   return [...all]

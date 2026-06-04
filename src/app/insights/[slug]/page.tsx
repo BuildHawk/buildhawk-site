@@ -9,20 +9,17 @@ import {
   authors,
   getArticleBySlug,
   getRelatedArticles,
-  getSortedArticles,
 } from "@/lib/articles";
 
-type Params = Promise<{ slug: string }>;
+export const dynamic = "force-dynamic";
 
-export async function generateStaticParams() {
-  return getSortedArticles().map((a) => ({ slug: a.slug }));
-}
+type Params = Promise<{ slug: string }>;
 
 export async function generateMetadata(
   { params }: { params: Params }
 ): Promise<Metadata> {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const article = await getArticleBySlug(slug);
   if (!article) return { title: "Insights · BuildHawk" };
   return {
     title: `${article.title} · BuildHawk Insights`,
@@ -48,10 +45,10 @@ function formatDate(iso: string): string {
 
 export default async function ArticlePage({ params }: { params: Params }) {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const article = await getArticleBySlug(slug);
   if (!article) notFound();
   const author = authors[article.authorId];
-  const related = getRelatedArticles(slug, 2);
+  const related = await getRelatedArticles(slug, 2);
 
   return (
     <main className="relative bg-bh-white text-bh-black">

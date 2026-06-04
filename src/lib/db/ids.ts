@@ -23,6 +23,7 @@ export const ids = {
   magicLink: () => `mgl_${nano(20)}`,
   audit: () => `aud_${nano(16)}`,
   usage: () => `usg_${nano(16)}`,
+  article: () => `art_${nano(16)}`,
 };
 
 export function slugify(name: string) {

@@ -9,8 +9,10 @@ export const metadata: Metadata = {
     "Field notes from inside Australian residential construction. Estimating, contract administration, variation control and the data behind margin protection — written by the BuildHawk team and the Hawktress™ platform.",
 };
 
-export default function InsightsPage() {
-  const all = getSortedArticles();
+export const dynamic = "force-dynamic";
+
+export default async function InsightsPage() {
+  const all = await getSortedArticles();
   const [feature, ...rest] = all;
 
   return (

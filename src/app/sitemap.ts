@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
-import { articles } from "@/lib/articles";
+import { getSortedArticles } from "@/lib/articles";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://buildhawk.com.au";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -40,7 +40,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/terms-suppliers`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
   ];
 
-  const articleRoutes: MetadataRoute.Sitemap = articles.map((a) => ({
+  const allArticles = await getSortedArticles();
+  const articleRoutes: MetadataRoute.Sitemap = allArticles.map((a) => ({
     url: `${SITE_URL}/insights/${a.slug}`,
     lastModified: new Date(a.date),
     changeFrequency: "yearly",

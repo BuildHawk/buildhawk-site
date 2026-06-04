@@ -28,8 +28,10 @@ function groupByCategory(articles: Article[]) {
     .filter((g) => g.items.length > 0);
 }
 
-export default function ArticlesPage() {
-  const all = getSortedArticles();
+export const dynamic = "force-dynamic";
+
+export default async function ArticlesPage() {
+  const all = await getSortedArticles();
   const grouped = groupByCategory(all);
   const years = Array.from(new Set(all.map((a) => a.date.slice(0, 4)))).sort();
   const yearRange = years.length > 1 ? `${years[0]} → ${years[years.length - 1]}` : years[0];
