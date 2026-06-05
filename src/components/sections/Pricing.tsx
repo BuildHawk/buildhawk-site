@@ -245,10 +245,11 @@ export default function Pricing() {
             <details
               key={o.id}
               id={o.id}
+              name="bh-pricing"
               open={o.defaultOpen}
-              className="group border-b border-bh-steel/60 scroll-mt-24"
+              className="bh-disclosure group border-b border-bh-steel/60 scroll-mt-24"
             >
-              <summary className="flex items-start justify-between gap-6 cursor-pointer list-none py-6 md:py-8 [&::-webkit-details-marker]:hidden">
+              <summary className="flex items-start justify-between gap-6 cursor-pointer list-none py-6 md:py-8 -mx-4 px-4 rounded-[10px] hover:bg-bh-cloud/40 transition-colors duration-200 [&::-webkit-details-marker]:hidden">
                 <div className="min-w-0">
                   <p className="text-[11px] tracking-[0.2em] uppercase text-bh-orange mb-2">
                     {o.eyebrow}
@@ -261,7 +262,7 @@ export default function Pricing() {
                   </p>
                 </div>
                 <div className="flex flex-none items-center gap-4 md:gap-6 pt-1">
-                  <span className="hidden sm:inline-block text-right text-[13px] md:text-[15px] font-medium tracking-[-0.01em] tabular-nums text-bh-black">
+                  <span className="hidden sm:inline-flex items-center h-7 px-3 rounded-full border border-bh-steel/70 text-[12px] md:text-[13px] font-medium tracking-[-0.01em] tabular-nums text-bh-graphite whitespace-nowrap group-hover:border-bh-orange/60 transition-colors">
                     {o.priceRange}
                   </span>
                   <span
@@ -288,9 +289,11 @@ export default function Pricing() {
 
               <div className="pb-8 md:pb-12">
                 {/* price range on mobile, where the summary hides it */}
-                <p className="sm:hidden mb-5 text-[14px] font-medium tracking-[-0.01em] tabular-nums text-bh-graphite">
-                  {o.priceRange}
-                </p>
+                <div className="sm:hidden mb-5">
+                  <span className="inline-flex items-center h-7 px-3 rounded-full border border-bh-steel/70 text-[12px] font-medium tracking-[-0.01em] tabular-nums text-bh-graphite">
+                    {o.priceRange}
+                  </span>
+                </div>
 
                 <div
                   className={`grid gap-6 grid-cols-1 ${
