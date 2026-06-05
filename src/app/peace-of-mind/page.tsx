@@ -55,7 +55,7 @@ const steps = [
   "Pay online",
   "Upload your quotes, plans and specifications",
   "We review and reconcile",
-  "Report and readout within 5 business days",
+  "Detailed report",
 ];
 
 export default function PeaceOfMindPage() {
