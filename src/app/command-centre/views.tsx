@@ -329,7 +329,7 @@ export const ProcurementView = () => {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Stat label="Alliance suppliers" value={String(ALLIANCE_SUPPLIERS.length)} sub="Active and verified" />
         <Stat
-          label="Preferred tier"
+          label="Preferred-tier suppliers"
           value={String(ALLIANCE_SUPPLIERS.filter((s) => s.tier === "Preferred").length)}
           sub="With live catalogue"
         />
@@ -741,7 +741,7 @@ export const ReportsView = ({ projects }: { projects: RawProjectLike[] | null })
         <Stat
           label="Reports delivered"
           value={String(snap.reportsDelivered)}
-          sub={snap.reportsDelivered === 0 ? "Reporting engine on roadmap" : "Since founding subscription"}
+          sub={snap.reportsDelivered === 0 ? "Reporting engine on roadmap" : "Since engagement start"}
         />
         <Stat
           label="Next report scheduled"

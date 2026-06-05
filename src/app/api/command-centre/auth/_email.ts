@@ -35,8 +35,8 @@ export function renderMagicLinkEmail(opts: {
     mode === "signin"
       ? "Click below to access the BuildHawk Cost Plan Console. This link expires in 30 minutes and can only be used once."
       : mode === "signup"
-        ? "Click below to confirm your email and finish creating your BuildHawk workspace. This link expires in 30 minutes."
-        : `Click below to accept the invitation and join ${tenantName ?? "the workspace"}. This link expires in 30 minutes.`;
+        ? "Click below to confirm your email and finish setting up your BuildHawk engagement. This link expires in 30 minutes."
+        : `Click below to accept the invitation and join ${tenantName ?? "the engagement"}. This link expires in 30 minutes.`;
   const cta =
     mode === "signin" ? "Sign in" : mode === "signup" ? "Confirm email" : "Accept invite";
 

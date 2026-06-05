@@ -172,7 +172,7 @@ export default async function CommandCentrePage() {
     if (!access.allowed) {
       return (
         <BillingRequired
-          tenant={{ name: ctx.tenant.name, plan: ctx.tenant.plan }}
+          tenant={{ name: ctx.tenant.name }}
           state={access.state}
           reason={access.reason}
         />

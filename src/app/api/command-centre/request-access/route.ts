@@ -100,9 +100,9 @@ const renderApplicantEmail = (p: Required<Pick<Payload, "name">> & Payload) => {
   const firstName = p.name.split(" ")[0];
   const text = `Hi ${firstName},
 
-Thanks for requesting access to the BuildHawk Cost Plan Console.
+Thanks for applying for a BuildHawk engagement.
 
-We'll review your request and get back to you within one business day. If you're a fit for the founding cohort we'll send a magic-link to ${p.email} so you can sign in.
+We'll review your application and get back to you within one business day. If we're a fit we'll send a sign-in link to ${p.email}.
 
 If you have questions in the meantime, reply to this email.
 
@@ -116,8 +116,8 @@ If you have questions in the meantime, reply to this email.
         <div style="font-size:9px;letter-spacing:0.16em;color:#6e7180;text-transform:uppercase;">Powered by Hawktress&trade;</div>
       </div>
     </div>
-    <h1 style="font-size:24px;font-weight:800;letter-spacing:-0.01em;margin:0 0 12px;">Request received</h1>
-    <p style="font-size:14px;color:#475569;margin:0 0 18px;line-height:1.5;">Hi ${escapeHtml(firstName)}, thanks for applying. We'll review your details and reply within one business day. If you're a fit for the founding cohort, we'll send a sign-in link to <strong>${escapeHtml(p.email ?? "")}</strong>.</p>
+    <h1 style="font-size:24px;font-weight:800;letter-spacing:-0.01em;margin:0 0 12px;">Application received</h1>
+    <p style="font-size:14px;color:#475569;margin:0 0 18px;line-height:1.5;">Hi ${escapeHtml(firstName)}, thanks for applying. We'll review your details and reply within one business day. If we're a fit, we'll send a sign-in link to <strong>${escapeHtml(p.email ?? "")}</strong>.</p>
     <p style="font-size:13px;color:#94a3b8;margin:24px 0 0;">If you have questions in the meantime, just reply to this email.</p>
   </div>
 </body></html>`;

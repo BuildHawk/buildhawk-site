@@ -211,7 +211,7 @@ export default function LoginForm({
             {invitationOnly && (
               <div className="mb-5 rounded-2xl border border-bh-orange-200/60 bg-bh-orange-50/70 backdrop-blur p-3 text-xs text-bh-orange-700">
                 <strong className="block font-bold mb-0.5">By invitation only.</strong>
-                BuildHawk is currently onboarding a small founding cohort. Submit the form below and the team will reply within one business day.
+                BuildHawk works with a small number of builders at a time. Submit the form below and the team will reply within one business day.
               </div>
             )}
             {tab === "signin" ? (
@@ -260,14 +260,7 @@ export default function LoginForm({
                   >
                     Request access
                   </button>{" "}
-                  for a guided onboarding, or{" "}
-                  <Link
-                    href="/command-centre/signup"
-                    className="font-semibold text-slate-700 underline underline-offset-2 hover:text-slate-900"
-                  >
-                    start a free trial workspace
-                  </Link>{" "}
-                  yourself. By signing in you agree to our{" "}
+                  to be set up on an engagement. By signing in you agree to our{" "}
                   <Link
                     href="/data-policy"
                     className="font-semibold text-slate-700 underline underline-offset-2 hover:text-slate-900"
@@ -286,14 +279,7 @@ export default function LoginForm({
                   >
                     Sign in
                   </button>
-                  . Want to skip the queue?{" "}
-                  <Link
-                    href="/command-centre/signup"
-                    className="font-semibold text-slate-700 underline underline-offset-2 hover:text-slate-900"
-                  >
-                    Start a free trial workspace
-                  </Link>
-                  .
+                  . Access is by invitation only.
                 </>
               )}
             </div>
@@ -504,18 +490,18 @@ function RequestPanel({
         New here
       </div>
       <h1 className="mt-2 text-2xl font-extrabold tracking-tight">
-        Request access for your team
+        Apply for an engagement
       </h1>
       <p className="mt-2 text-sm text-slate-600">
-        Tell us a bit about your business and we&apos;ll set up your workspace, connect your PM tool, and walk you through the first cost plan. Reply within one business day.
+        Tell us a bit about your business. If we&apos;re a fit we&apos;ll set up your engagement, connect your PM tool, and walk you through the first cost plan. Reply within one business day.
       </p>
 
       {state.status === "sent" ? (
         <div className="mt-6 rounded-xl border border-bh-success-200 bg-bh-success-50 p-4">
-          <div className="font-bold text-bh-success-500 text-sm">Request received.</div>
+          <div className="font-bold text-bh-success-500 text-sm">Application received.</div>
           <p className="mt-1 text-sm text-bh-success-500">
             Thanks. The BuildHawk team will reply to{" "}
-            <strong className="font-semibold">{state.email}</strong> within one business day. If you&apos;re a fit for the founding cohort we&apos;ll send a sign-in link.
+            <strong className="font-semibold">{state.email}</strong> within one business day. If we&apos;re a fit we&apos;ll send a sign-in link.
           </p>
           <button
             type="button"

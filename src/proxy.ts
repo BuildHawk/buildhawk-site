@@ -28,7 +28,6 @@ export const config = {
 
 const PUBLIC_PATHS = new Set([
   "/command-centre/login",
-  "/command-centre/signup",
   "/command-centre/request-access",
 ]);
 

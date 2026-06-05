@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getActiveContext } from "@/lib/auth";
 import { getGhlConfig } from "@/lib/integrations";
-import { PLANS } from "@/lib/billing/plans";
 import GlassBackground from "../_components/GlassBackground";
 import OnboardingWizard from "./OnboardingWizard";
 
 export const metadata: Metadata = {
-  title: "Welcome to BuildHawk · Set up your workspace",
+  title: "Welcome to BuildHawk · Engagement setup",
   robots: { index: false, follow: false },
 };
 
@@ -21,15 +20,6 @@ export default async function OnboardingPage() {
   const ghl = await getGhlConfig(ctx.tenant.id).catch(() => null);
   if (ghl) redirect("/command-centre");
 
-  const plan = PLANS[ctx.tenant.plan];
-  const trialEnds = ctx.tenant.trialEndsAt
-    ? new Date(ctx.tenant.trialEndsAt).toLocaleDateString("en-AU", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
-    : null;
-
   return (
     <div className="min-h-screen text-slate-900 relative">
       <GlassBackground tone="light" />
@@ -37,10 +27,7 @@ export default async function OnboardingPage() {
         tenant={{
           id: ctx.tenant.id,
           name: ctx.tenant.name,
-          plan: ctx.tenant.plan,
-          planName: plan.name,
           status: ctx.tenant.status,
-          trialEndsLabel: trialEnds,
         }}
         user={{
           email: ctx.user.email,

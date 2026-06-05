@@ -7,10 +7,7 @@ import Image from "next/image";
 type Tenant = {
   id: string;
   name: string;
-  plan: string;
-  planName: string;
   status: string;
-  trialEndsLabel: string | null;
 };
 
 type GhlForm = {
@@ -23,9 +20,9 @@ type Step = 1 | 2 | 3;
 
 const Stepper = ({ active }: { active: Step }) => {
   const steps = [
-    { n: 1, label: "Welcome" },
-    { n: 2, label: "Connect GHL" },
-    { n: 3, label: "You're in" },
+    { n: 1, label: "Brief" },
+    { n: 2, label: "Connect" },
+    { n: 3, label: "Live data" },
   ];
   return (
     <ol className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] font-bold">
@@ -137,17 +134,15 @@ export default function OnboardingWizard({
           {step === 1 && (
             <>
               <div className="text-[11px] uppercase tracking-[0.18em] text-bh-orange-700 font-bold">
-                Welcome
+                Brief
               </div>
               <h1 className="mt-2 text-3xl font-extrabold tracking-tight">
-                Hi {user.name?.split(" ")[0] ?? user.email}, your workspace is ready
+                Hi {user.name?.split(" ")[0] ?? user.email}, your engagement is set up
               </h1>
               <p className="mt-3 text-sm text-slate-600 leading-relaxed max-w-xl">
-                <strong className="text-slate-900">{tenant.name}</strong> is on the{" "}
-                {tenant.planName} plan
-                {tenant.trialEndsLabel ? ` — trial ends ${tenant.trialEndsLabel}.` : "."}{" "}
-                Next, connect your GHL account so we can pull your active projects and write
-                workbook overlays back. Takes 60 seconds.
+                <strong className="text-slate-900">{tenant.name}</strong> is live in the Cost
+                Plan Console. Next, connect your GHL account so we can pull your active
+                projects and write workbook overlays back. Takes 60 seconds.
               </p>
               <ul className="mt-6 text-sm text-slate-700 space-y-2.5">
                 <li className="flex items-start gap-2">
@@ -184,7 +179,7 @@ export default function OnboardingWizard({
           {step === 2 && (
             <>
               <div className="text-[11px] uppercase tracking-[0.18em] text-bh-orange-700 font-bold">
-                Connect GHL
+                Connect
               </div>
               <h2 className="mt-2 text-2xl font-extrabold tracking-tight">
                 Paste your GHL Private Integration token
@@ -291,14 +286,15 @@ export default function OnboardingWizard({
           {step === 3 && (
             <>
               <div className="text-[11px] uppercase tracking-[0.18em] text-emerald-700 font-bold">
-                You're in
+                Live data
               </div>
               <h2 className="mt-2 text-2xl font-extrabold tracking-tight">
-                {tenant.name} is set up
+                {tenant.name} is live
               </h2>
               <p className="mt-3 text-sm text-slate-600 leading-relaxed max-w-xl">
                 Head into the Cost Plan Console to see your projects, fill workbooks, and
-                let the AI co-pilot draft your director briefs. We're here if you need us.
+                let the intelligence brief draft your director updates. We're here if you
+                need us.
               </p>
               <div className="mt-7 flex gap-3">
                 <Link
@@ -311,7 +307,7 @@ export default function OnboardingWizard({
                   href="/command-centre/settings"
                   className="inline-flex items-center justify-center h-11 px-5 rounded-md border border-slate-300 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50"
                 >
-                  Invite a teammate
+                  Add an authorised user
                 </Link>
               </div>
             </>

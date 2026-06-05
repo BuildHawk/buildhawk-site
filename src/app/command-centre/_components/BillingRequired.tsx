@@ -4,12 +4,12 @@ import GlassBackground from "./GlassBackground";
 import type { TenantAccess } from "@/lib/billing/access";
 
 const headlines: Record<TenantAccess["state"], string> = {
-  active: "Subscription is active",
-  trialing: "Trial in progress",
-  trial_expired: "Trial ended",
-  past_due: "Payment failed",
-  canceled: "Subscription canceled",
-  paused: "Subscription paused",
+  active: "Engagement is active",
+  trialing: "Engagement in progress",
+  trial_expired: "Engagement paused",
+  past_due: "Engagement on hold",
+  canceled: "Engagement closed",
+  paused: "Engagement paused",
 };
 
 export default function BillingRequired({
@@ -17,7 +17,7 @@ export default function BillingRequired({
   state,
   reason,
 }: {
-  tenant: { name: string; plan: string };
+  tenant: { name: string };
   state: TenantAccess["state"];
   reason: string | null;
 }) {
@@ -65,7 +65,7 @@ export default function BillingRequired({
         >
           <div className="p-7">
             <div className="text-[11px] uppercase tracking-[0.18em] text-bh-orange-700 font-bold">
-              {tenant.name} · {tenant.plan}
+              {tenant.name}
             </div>
             <h1 className="mt-2 text-2xl font-extrabold tracking-tight">
               {headlines[state]}
@@ -75,21 +75,14 @@ export default function BillingRequired({
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <Link
-                href="/command-centre/settings#billing"
+                href="mailto:services@buildhawk.com.au?subject=Cost%20Plan%20Console%20engagement"
                 className="inline-flex items-center justify-center h-11 px-5 rounded-md bg-bh-ink text-white text-sm font-semibold hover:bg-bh-ink/90"
               >
-                Manage billing
-              </Link>
-              <Link
-                href="mailto:services@buildhawk.com.au?subject=Cost%20Plan%20Console%20billing"
-                className="inline-flex items-center justify-center h-11 px-5 rounded-md border border-slate-300 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50"
-              >
-                Email support
+                Contact us about your engagement
               </Link>
             </div>
             <p className="mt-6 text-[11px] text-slate-500">
-              Your project data is preserved and will reappear the moment your subscription
-              is in good standing.
+              Your project data is preserved and reappears once the engagement resumes.
             </p>
           </div>
         </div>

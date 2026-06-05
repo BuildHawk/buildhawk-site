@@ -75,7 +75,7 @@ graph TB
   subgraph Cross[" Cross-cutting "]
     direction LR
     AUTH["Auth · multi-tenant<br/>MFA enforced"]:::cross
-    BILL["Stripe AU<br/>subscription tiers"]:::cross
+    BILL["Stripe AU<br/>billing infrastructure"]:::cross
     SPINE["GHL + Power Automate<br/>sales · onboarding · billing events"]:::cross
     GOV["Agent governance<br/>prompt registry · evals · kill switch"]:::cross
   end

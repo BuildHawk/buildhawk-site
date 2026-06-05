@@ -75,7 +75,7 @@ export async function POST(req: Request) {
       {
         ok: false,
         error:
-          "Your account isn't attached to a workspace yet. Contact your administrator.",
+          "Your account isn't attached to an engagement yet. Contact your administrator.",
       },
       { status: 403 },
     );

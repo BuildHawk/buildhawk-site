@@ -10,8 +10,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://buildhawk.com.au";
  *    /faq, /partners, /insights*, /articles*, /data-policy, /terms-*
  *    /status                            uptime / status page
  *    /command-centre/login              sign-in + request-access (tabbed)
- *    /command-centre/signup             start a workspace (14-day trial)
- *    /command-centre/request-access     founding-cohort access landing
+ *    /command-centre/request-access     access request landing
  *
  *  PUBLIC but NOINDEX (auth/payment surfaces — don't pollute search)
  *    nothing right now; everything public is indexable.
@@ -34,7 +33,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: [
           "/",
           "/command-centre/login",
-          "/command-centre/signup",
           "/command-centre/request-access",
         ],
         // /command-centre is a gated surface; allow exceptions above carve out

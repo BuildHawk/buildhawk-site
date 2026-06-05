@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PLANS, type PlanTier } from "@/lib/billing/plans";
 import {
   CONNECTORS,
   connectorGroups,
@@ -12,9 +11,7 @@ import {
 type TenantSummary = {
   id: string;
   name: string;
-  plan: PlanTier;
   status: string;
-  stripeCustomerId: string | null;
 };
 
 type GhlSummary = {
@@ -27,25 +24,14 @@ export default function SettingsClient({
   tenant,
   membership,
   ghl,
-  stripeReady,
 }: {
   tenant: TenantSummary;
   membership: { role: string };
   ghl: GhlSummary | null;
-  stripeReady: boolean;
 }) {
   const isAdmin = membership.role === "owner" || membership.role === "admin";
   return (
     <div className="space-y-8">
-      <Section title="Plan + billing">
-        <PlanGrid currentTier={tenant.plan} isAdmin={isAdmin} stripeReady={stripeReady} />
-        {tenant.stripeCustomerId && isAdmin && (
-          <div className="mt-3 text-xs">
-            <PortalButton />
-          </div>
-        )}
-      </Section>
-
       <Section title="Sign-in security">
         <PasswordPanel />
       </Section>
@@ -54,7 +40,7 @@ export default function SettingsClient({
         <IntegrationsCatalog tenantId={tenant.id} ghl={ghl} isAdmin={isAdmin} />
       </Section>
 
-      <Section title="Team">
+      <Section title="Authorised users">
         <TeamPanel tenantId={tenant.id} isAdmin={isAdmin} />
       </Section>
 
@@ -258,111 +244,6 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       </div>
       {children}
     </section>
-  );
-}
-
-function PlanGrid({
-  currentTier,
-  isAdmin,
-  stripeReady,
-}: {
-  currentTier: PlanTier;
-  isAdmin: boolean;
-  stripeReady: boolean;
-}) {
-  const [pending, setPending] = useState<PlanTier | null>(null);
-  const upgrade = async (tier: PlanTier) => {
-    setPending(tier);
-    try {
-      const res = await fetch("/api/command-centre/stripe/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tier }),
-      });
-      const data = await res.json();
-      if (data.ok && data.url) {
-        window.location.href = data.url;
-      } else {
-        alert(data.error ?? "Checkout failed");
-        setPending(null);
-      }
-    } catch (e) {
-      alert(e instanceof Error ? e.message : String(e));
-      setPending(null);
-    }
-  };
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-      {Object.values(PLANS).map((p) => {
-        const isCurrent = p.id === currentTier;
-        const canUpgrade = isAdmin && stripeReady && p.id !== "enterprise" && !isCurrent;
-        return (
-          <div
-            key={p.id}
-            className={`rounded-xl border p-4 ${
-              isCurrent ? "border-bh-orange bg-bh-orange-50/70" : "border-white/60 bg-white/50"
-            }`}
-          >
-            <div className="flex items-baseline justify-between">
-              <div className="font-bold">{p.name}</div>
-              <div className="text-[11px] text-slate-500">{p.priceLabel}</div>
-            </div>
-            <p className="mt-1 text-xs text-slate-600">{p.blurb}</p>
-            <ul className="mt-3 text-[11px] text-slate-600 space-y-0.5">
-              {p.highlights.map((h) => (
-                <li key={h}>· {h}</li>
-              ))}
-            </ul>
-            {isCurrent && (
-              <div className="mt-3 text-[11px] uppercase tracking-wider font-bold text-bh-orange-700">
-                Current plan
-              </div>
-            )}
-            {canUpgrade && (
-              <button
-                onClick={() => upgrade(p.id)}
-                disabled={pending !== null}
-                className="mt-3 w-full h-9 rounded-md bg-bh-ink text-white text-sm font-semibold hover:bg-bh-ink/90 disabled:opacity-60"
-              >
-                {pending === p.id ? "Redirecting…" : p.ctaLabel}
-              </button>
-            )}
-            {p.id === "enterprise" && !isCurrent && (
-              <a
-                href="mailto:sales@buildhawk.com.au?subject=Enterprise%20enquiry"
-                className="mt-3 w-full inline-flex items-center justify-center h-9 rounded-md border border-slate-300 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-              >
-                Talk to sales
-              </a>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function PortalButton() {
-  const [busy, setBusy] = useState(false);
-  const open = async () => {
-    setBusy(true);
-    try {
-      const res = await fetch("/api/command-centre/stripe/portal", { method: "POST" });
-      const data = await res.json();
-      if (data.ok && data.url) window.location.href = data.url;
-      else alert(data.error ?? "Portal failed");
-    } finally {
-      setBusy(false);
-    }
-  };
-  return (
-    <button
-      onClick={open}
-      disabled={busy}
-      className="text-bh-orange-700 font-semibold underline underline-offset-2"
-    >
-      {busy ? "Opening…" : "Open Stripe customer portal"}
-    </button>
   );
 }
 
@@ -737,7 +618,7 @@ function TeamPanel({ tenantId, isAdmin }: { tenantId: string; isAdmin: boolean }
             disabled={busy}
             className="h-9 px-3 inline-flex items-center rounded-md bg-bh-ink text-white text-sm font-semibold disabled:opacity-60"
           >
-            {busy ? "Sending…" : "Send invite"}
+            {busy ? "Sending…" : "Add authorised user"}
           </button>
         </form>
       )}

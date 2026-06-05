@@ -117,12 +117,13 @@ export async function GET(req: Request) {
     tenantId = memberRows[0]?.tenant.id ?? null;
   }
 
-  // No tenant at all (rare: orphan user) → send to signup.
+  // No tenant at all (rare: orphan user). With self-serve signup removed,
+  // these users have no path forward without admin intervention. Mark
+  // verified and bounce them to login with an orphan flag.
   if (!tenantId) {
-    // Mark verified anyway and route to signup so they can create a workspace.
     await db().update(users).set({ emailVerified: true }).where(eq(users.id, user.id));
     return NextResponse.redirect(
-      new URL("/command-centre/signup?orphan=1", url.origin),
+      new URL("/command-centre/login?orphan=1", url.origin),
     );
   }
 
