@@ -4,7 +4,6 @@ import type { Article } from "./articles";
 
 const CONTENT_DIR = path.join(process.cwd(), "content", "blog");
 
-// Sections that mark the end of article body in loose-format files
 const BODY_STOP_PREFIXES = [
   "## meta title",
   "## meta description",
@@ -13,23 +12,41 @@ const BODY_STOP_PREFIXES = [
   "## suggestion",
 ];
 
-function slugFromFilename(filename: string): string {
-  return filename
-    .replace(/\.md$/i, "")
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function slugFromText(text: string): string {
+  return text
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
+function slugFromFilename(filename: string): string {
+  return slugFromText(filename.replace(/\.md$/i, ""));
 }
 
 function estimateReadingTime(text: string): number {
   return Math.max(1, Math.round(text.split(/\s+/).length / 200));
 }
 
-// ─── YAML frontmatter parser ─────────────────────────────────────────────────
+// Map any author string to a valid authorId
+function resolveAuthorId(author: string | undefined): Article["authorId"] {
+  if (!author) return "nathan";
+  const a = author.toLowerCase();
+  if (a.includes("jc") || a.includes("john") || a.includes("ceballos")) return "jc";
+  return "nathan";
+}
+
+function convertBodyLine(line: string): string {
+  return /^(\s*)-\s+/.test(line) ? line.replace(/^(\s*)-\s+/, "• ") : line;
+}
+
+// ─── Frontmatter parser ───────────────────────────────────────────────────────
 
 function parseFrontmatter(raw: string): {
   data: Record<string, string>;
-  body: string;
+  rest: string;
 } | null {
   const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
   if (!match) return null;
@@ -38,128 +55,154 @@ function parseFrontmatter(raw: string): {
   for (const line of match[1].split(/\r?\n/)) {
     const colonAt = line.indexOf(":");
     if (colonAt === -1) continue;
-    const key = line.slice(0, colonAt).trim();
+    const key = line.slice(0, colonAt).trim().toLowerCase();
     const val = line.slice(colonAt + 1).trim();
     if (key) data[key] = val;
   }
-  return { data, body: match[2].trim() };
+  return { data, rest: match[2] };
 }
 
-function articleFromFrontmatter(
-  raw: string,
-  filename: string
-): Article | null {
-  const parsed = parseFrontmatter(raw);
-  if (!parsed) return null;
-  const { data, body } = parsed;
+// ─── Full frontmatter path (all required fields present) ─────────────────────
 
-  const { slug, title, dek, authorId, date, readingTime, category, cover } =
-    data;
-  if (!slug || !title || !dek || !authorId || !date || !category || !cover)
-    return null;
-  if (authorId !== "nathan" && authorId !== "jc") return null;
-  if (
-    category !== "Methodology" &&
-    category !== "Field Notes" &&
-    category !== "Founder" &&
-    category !== "Operator Handbook"
-  )
-    return null;
+function articleFromFullFrontmatter(
+  data: Record<string, string>,
+  body: string
+): Article | null {
+  const { slug, title, dek, authorid, date, readingtime, category, cover } = data;
+  const resolvedAuthorId = authorid ?? data["authorid"];
+  if (!slug || !title || !dek || !date || !category || !cover) return null;
+  if (resolvedAuthorId !== "nathan" && resolvedAuthorId !== "jc") return null;
+  if (!["Methodology", "Field Notes", "Founder", "Operator Handbook"].includes(category)) return null;
 
   return {
     slug,
     title,
     dek,
-    authorId: authorId as Article["authorId"],
+    authorId: resolvedAuthorId as Article["authorId"],
     date,
-    readingTime: readingTime ? parseInt(readingTime, 10) : estimateReadingTime(body),
+    readingTime: readingtime ? parseInt(readingtime, 10) : estimateReadingTime(body),
     category: category as Article["category"],
     cover,
     body,
-    ...(data.youtubeId && { youtubeId: data.youtubeId }),
-    ...(data.videoLabel && { videoLabel: data.videoLabel }),
-    ...(data.videoSrc && { videoSrc: data.videoSrc }),
-    ...(data.videoPoster && { videoPoster: data.videoPoster }),
-    ...(data.videoCredit && { videoCredit: data.videoCredit }),
+    ...(data.youtubeid && { youtubeId: data.youtubeid }),
+    ...(data.videolabel && { videoLabel: data.videolabel }),
+    ...(data.videosrc && { videoSrc: data.videosrc }),
+    ...(data.videoposter && { videoPoster: data.videoposter }),
+    ...(data.videocredit && { videoCredit: data.videocredit }),
   };
 }
 
-// ─── Loose format parser (no frontmatter) ────────────────────────────────────
-//
-// Expected shape:
-//   Line 1 (optional): https://... or /path  →  cover image
-//   # Title                                  →  title
-//   ## First H2                              →  dek (subtitle)
-//   ... rest of content ...                  →  body (until a stop marker)
+// ─── Loose body parser ────────────────────────────────────────────────────────
+// Reads: optional image URL, # Title, ## Dek, body (stops at SEO sections)
 
-function convertBodyLine(line: string): string {
-  // Convert standard markdown "-" bullets to the site's "•" bullet syntax
-  return /^(\s*)-\s+/.test(line) ? line.replace(/^(\s*)-\s+/, "• ") : line;
+function parseLooseBody(text: string): {
+  cover: string | null;
+  h1: string | null;
+  h2: string | null;
+  body: string;
+} {
+  const lines = text.split(/\r?\n/);
+  let i = 0;
+  let cover: string | null = null;
+  let h1: string | null = null;
+  let h2: string | null = null;
+
+  // Optional image URL on first non-blank line
+  while (i < lines.length && !lines[i]?.trim()) i++;
+  const first = lines[i]?.trim() ?? "";
+  if (first.startsWith("http://") || first.startsWith("https://") || first.startsWith("/")) {
+    cover = first;
+    i++;
+  }
+
+  // Skip blanks
+  while (i < lines.length && !lines[i]?.trim()) i++;
+
+  // H1 → article title
+  if (lines[i]?.trim().startsWith("# ")) {
+    h1 = lines[i]!.trim().slice(2).trim();
+    i++;
+  }
+
+  // Skip blanks
+  while (i < lines.length && !lines[i]?.trim()) i++;
+
+  // First H2 → dek
+  if (lines[i]?.trim().startsWith("## ")) {
+    h2 = lines[i]!.trim().slice(3).trim();
+    i++;
+  }
+
+  // Body until stop marker
+  const bodyLines: string[] = [];
+  for (; i < lines.length; i++) {
+    const trimmed = lines[i]!.trim().toLowerCase();
+    if (BODY_STOP_PREFIXES.some((p) => trimmed.startsWith(p))) break;
+    bodyLines.push(convertBodyLine(lines[i]!));
+  }
+
+  const body = bodyLines.join("\n").replace(/\n{3,}/g, "\n\n").trim();
+  return { cover, h1, h2, body };
 }
 
-function articleFromLooseFormat(
+// ─── Main per-file resolver ───────────────────────────────────────────────────
+
+function articleFromFile(
   raw: string,
   filename: string,
   mtime: Date
 ): Article | null {
-  const rawLines = raw.split(/\r?\n/);
-  let i = 0;
+  const fm = parseFrontmatter(raw);
 
-  // Line 0: optional cover image URL
-  let cover = "/brand/cover-sitework.svg?v=2";
-  const firstLine = rawLines[0]?.trim() ?? "";
-  if (firstLine.startsWith("http://") || firstLine.startsWith("https://") || firstLine.startsWith("/")) {
-    cover = firstLine;
-    i = 1;
+  if (fm) {
+    const { data, rest } = fm;
+
+    // Path A: full frontmatter with all required fields
+    const full = articleFromFullFrontmatter(data, rest.trim());
+    if (full) return full;
+
+    // Path B: partial frontmatter (title / date / author) + loose body
+    const loose = parseLooseBody(rest);
+    const title = data.title || loose.h1;
+    if (!title) return null;
+
+    const dek = loose.h2 ?? title;
+    const cover = loose.cover ?? "/brand/cover-sitework.svg?v=2";
+    const body = loose.body;
+    if (!body) return null;
+
+    return {
+      slug: data.slug ?? slugFromFilename(filename),
+      title,
+      dek,
+      authorId: resolveAuthorId(data.author ?? data.authorid),
+      date: data.date ?? mtime.toISOString().slice(0, 10),
+      readingTime: data.readingtime
+        ? parseInt(data.readingtime, 10)
+        : estimateReadingTime(body),
+      category: (data.category as Article["category"]) ?? "Field Notes",
+      cover,
+      body,
+      ...(data.youtubeid && { youtubeId: data.youtubeid }),
+      ...(data.videolabel && { videoLabel: data.videolabel }),
+    };
   }
 
-  // Skip blank lines
-  while (i < rawLines.length && !rawLines[i]?.trim()) i++;
-
-  // Find H1 → title
-  let title = "";
-  if (rawLines[i]?.trim().startsWith("# ")) {
-    title = rawLines[i].trim().slice(2).trim();
-    i++;
-  }
-  if (!title) return null;
-
-  // Skip blank lines
-  while (i < rawLines.length && !rawLines[i]?.trim()) i++;
-
-  // Find first H2 → dek
-  let dek = "";
-  if (rawLines[i]?.trim().startsWith("## ")) {
-    dek = rawLines[i].trim().slice(3).trim();
-    i++;
-  }
-  if (!dek) dek = title;
-
-  // Collect body lines until a stop marker
-  const bodyLines: string[] = [];
-  for (; i < rawLines.length; i++) {
-    const trimmed = rawLines[i].trim().toLowerCase();
-    if (BODY_STOP_PREFIXES.some((p) => trimmed.startsWith(p))) break;
-    bodyLines.push(convertBodyLine(rawLines[i]));
-  }
-
-  const body = bodyLines
-    .join("\n")
-    .replace(/\n{3,}/g, "\n\n") // collapse excessive blank lines
-    .trim();
-
-  if (!body) return null;
+  // Path C: no frontmatter at all — pure loose format
+  const loose = parseLooseBody(raw);
+  const title = loose.h1;
+  if (!title || !loose.body) return null;
 
   return {
     slug: slugFromFilename(filename),
     title,
-    dek,
+    dek: loose.h2 ?? title,
     authorId: "nathan",
     date: mtime.toISOString().slice(0, 10),
-    readingTime: estimateReadingTime(body),
+    readingTime: estimateReadingTime(loose.body),
     category: "Field Notes",
-    cover,
-    body,
+    cover: loose.cover ?? "/brand/cover-sitework.svg?v=2",
+    body: loose.body,
   };
 }
 
@@ -178,14 +221,10 @@ export function getMarkdownArticles(): Article[] {
         const filepath = path.join(CONTENT_DIR, file);
         const raw = fs.readFileSync(filepath, "utf-8");
         const mtime = fs.statSync(filepath).mtime;
-
-        const article =
-          articleFromFrontmatter(raw, file) ??
-          articleFromLooseFormat(raw, file, mtime);
-
+        const article = articleFromFile(raw, file, mtime);
         if (article) results.push(article);
       } catch {
-        // skip files that can't be read or parsed
+        // skip unreadable / malformed files
       }
     }
 
