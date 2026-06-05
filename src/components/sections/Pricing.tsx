@@ -21,49 +21,13 @@ type Offering = {
 
 const offerings: Offering[] = [
   {
-    id: "estimating",
-    eyebrow: "For builders",
-    title: "Estimating & delivery",
-    blurb:
-      "A precise estimating partner priced to your live pipeline. Start on one or two jobs, or fix a monthly cost across up to four.",
-    priceRange: "$2,750 – $5,850 / mo",
-    defaultOpen: true,
-    cta: { label: "Start a brief", href: "#intake" },
-    plans: [
-      {
-        name: "Base",
-        price: "From $2,750",
-        cadence: "/ month",
-        blurb:
-          "For builders running one or two live projects who want a precise estimating partner without committing to a full annual workspace.",
-        features: [
-          "Estimating tailored to the scope you bring",
-          "Margin and cost tracking through delivery",
-          "Brief to handover, run with our team",
-        ],
-      },
-      {
-        name: "Unlimited",
-        price: "From $5,850",
-        cadence: "/ month",
-        blurb:
-          "Up to 4 active jobs at a time. Built for builders with consistent pipeline who want a fixed monthly cost and a back-office team that flexes with the work.",
-        features: [
-          "Up to 4 active projects",
-          "Estimating, CA and live margin tracking",
-          "Priority response and rolling planning cadence",
-        ],
-        featured: true,
-      },
-    ],
-  },
-  {
     id: "commercial-support",
     eyebrow: "Priced to your turnover",
     title: "Commercial support",
     blurb:
       "Three tiers from a single detailed estimate to dedicated oversight across your pipeline. Understand the true cost of a project before you sign, and keep control of the budget through construction.",
     priceRange: "$1,150 / est – $5,850 / mo",
+    defaultOpen: true,
     cta: { label: "View commercial support", href: "/commercial-support" },
     plans: [
       {
