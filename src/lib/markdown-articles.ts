@@ -56,7 +56,10 @@ function parseFrontmatter(raw: string): {
     const colonAt = line.indexOf(":");
     if (colonAt === -1) continue;
     const key = line.slice(0, colonAt).trim().toLowerCase();
-    const val = line.slice(colonAt + 1).trim();
+    let val = line.slice(colonAt + 1).trim();
+    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+      val = val.slice(1, -1);
+    }
     if (key) data[key] = val;
   }
   return { data, rest: match[2] };
