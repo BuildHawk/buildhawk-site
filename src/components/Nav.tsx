@@ -3,12 +3,19 @@
 import { useEffect, useState } from "react";
 import BrandLockup from "@/components/BrandLockup";
 
-const links = [
+type NavLink = {
+  href: string;
+  label: string;
+  section: string | null;
+  bar?: boolean;
+};
+
+const links: NavLink[] = [
   { href: "/#hawktress", label: "Hawktress", section: "hawktress" },
   { href: "/#how", label: "How It Works", section: "how" },
   { href: "/#pricing", label: "Pricing", section: "pricing" },
-  { href: "/commercial-support", label: "Commercial Support", section: null },
-  { href: "/peace-of-mind", label: "Peace of Mind", section: null },
+  { href: "/commercial-support", label: "Commercial Support", section: null, bar: false },
+  { href: "/peace-of-mind", label: "Peace of Mind", section: null, bar: false },
   { href: "/partners", label: "Partners", section: null },
   { href: "/articles", label: "Articles", section: null },
   { href: "/faq", label: "FAQ", section: null },
@@ -85,13 +92,13 @@ export default function Nav() {
         <a href="#top" className="flex items-center">
           <BrandLockup tone="light" size="sm" />
         </a>
-        <nav className="hidden md:flex items-center gap-9">
-          {links.map((l) => (
+        <nav className="hidden lg:flex items-center gap-x-6 xl:gap-x-8">
+          {links.filter((l) => l.bar !== false).map((l) => (
             <a
               key={l.href}
               href={l.href}
               data-active={l.section ? active === l.section : undefined}
-              className="bh-nav-link text-[13px] tracking-[-0.005em] text-bh-graphite hover:text-bh-black transition-colors"
+              className="bh-nav-link whitespace-nowrap text-[13px] tracking-[-0.005em] text-bh-graphite hover:text-bh-black transition-colors"
             >
               {l.label}
             </a>
@@ -101,7 +108,7 @@ export default function Nav() {
           <a
             href="tel:+61433366607"
             aria-label="Call BuildHawk"
-            className="hidden lg:inline-flex items-center gap-2 text-[13px] tracking-[-0.005em] text-bh-graphite hover:text-bh-orange transition-colors"
+            className="hidden 2xl:inline-flex items-center gap-2 text-[13px] tracking-[-0.005em] text-bh-graphite hover:text-bh-orange transition-colors"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
               <path
@@ -141,7 +148,7 @@ export default function Nav() {
             aria-expanded={mobileOpen}
             aria-controls="mobile-menu"
             onClick={() => setMobileOpen((v) => !v)}
-            className="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-[8px] text-bh-black hover:bg-bh-cloud transition-colors"
+            className="lg:hidden inline-flex items-center justify-center w-11 h-11 rounded-[8px] text-bh-black hover:bg-bh-cloud transition-colors"
           >
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden>
               <path
@@ -158,7 +165,7 @@ export default function Nav() {
       {/* Mobile drawer */}
       <div
         id="mobile-menu"
-        className={`md:hidden fixed inset-x-0 top-16 bottom-0 bg-bh-white transition-[opacity,transform] duration-300 ease-out ${
+        className={`lg:hidden fixed inset-x-0 top-16 md:top-20 bottom-0 bg-bh-white transition-[opacity,transform] duration-300 ease-out ${
           mobileOpen
             ? "opacity-100 translate-y-0 pointer-events-auto"
             : "opacity-0 -translate-y-2 pointer-events-none"
