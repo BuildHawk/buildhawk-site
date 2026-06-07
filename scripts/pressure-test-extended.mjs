@@ -40,7 +40,7 @@ const section = (t) => console.log(`\n━━━ ${t} ━━━`);
 const fetchSite = (path, init = {}) => fetch(BASE + path, init);
 
 async function mintSession(email) {
-  // Caller has already INSERTed the user + membership in tenantHint.
+  // Caller has already INSERTed the user + membership for this tenant.
   // Mint a signin magic link, consume it, return the session cookie.
   const rawToken = randomBytes(32).toString("base64url");
   const tokenHash = createHash("sha256").update(rawToken).digest("hex");
@@ -103,10 +103,10 @@ await check("seed Tenant A + owner + viewer, Tenant B + owner, paused tenant", a
   );
 });
 
-const cookieOwnerA = await mintSession(emailOwnerA, tenA);
-const cookieViewerA = await mintSession(emailViewerA, tenA);
-const cookieOwnerB = await mintSession(emailOwnerB, tenB);
-const cookiePaused = await mintSession(pausedEmail, pausedTenant);
+const cookieOwnerA = await mintSession(emailOwnerA);
+const cookieViewerA = await mintSession(emailViewerA);
+const cookieOwnerB = await mintSession(emailOwnerB);
+const cookiePaused = await mintSession(pausedEmail);
 
 // ─── Magic link single-use + expiry ─────────────────────────────────────────
 section("Magic link enforcement");
