@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 const FLYER_PDF = "/buildhawk-peace-of-mind.pdf";
-const CONTACT_EMAIL = "services@buildhawk.com.au";
+const CONTACT_EMAIL = "info@buildhawk.com.au";
 const REVIEW_MAILTO = `mailto:${CONTACT_EMAIL}?subject=Peace%20of%20Mind%20quote%20review`;
 
 const mismatches = [

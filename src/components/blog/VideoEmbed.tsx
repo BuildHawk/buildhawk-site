@@ -106,10 +106,10 @@ export default function VideoEmbed({
               <p className="mt-1 text-[12px] tracking-[-0.005em] text-bh-steel/75">
                 Available on request · email{" "}
                 <a
-                  href="mailto:services@buildhawk.com.au"
+                  href="mailto:info@buildhawk.com.au"
                   className="text-bh-orange hover:text-bh-white"
                 >
-                  services@buildhawk.com.au
+                  info@buildhawk.com.au
                 </a>
               </p>
             )}

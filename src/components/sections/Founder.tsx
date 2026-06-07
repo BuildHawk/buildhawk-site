@@ -94,10 +94,10 @@ export default function Founder() {
                   Direct
                 </p>
                 <a
-                  href="mailto:services@buildhawk.com.au"
+                  href="mailto:info@buildhawk.com.au"
                   className="text-[16px] tracking-[-0.01em] text-bh-black hover:text-bh-orange transition-colors"
                 >
-                  services@buildhawk.com.au
+                  info@buildhawk.com.au
                 </a>
               </div>
             </div>

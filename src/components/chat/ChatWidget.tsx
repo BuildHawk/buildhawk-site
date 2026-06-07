@@ -175,7 +175,7 @@ export default function ChatWidget() {
       const data = (await r.json()) as { text?: string; lead?: Record<string, string> };
       const replyText =
         data.text ||
-        "Sorry, can you say that again? Or email services@buildhawk.com.au and we'll pick it up.";
+        "Sorry, can you say that again? Or email info@buildhawk.com.au and we'll pick it up.";
 
       // Subtle 'typing' delay scaled to message length, capped.
       const delay = Math.min(2200, 600 + replyText.length * 12);
@@ -216,7 +216,7 @@ export default function ChatWidget() {
           id: uid(),
           role: "assistant",
           content:
-            "Connection dropped. Try once more, or email services@buildhawk.com.au.",
+            "Connection dropped. Try once more, or email info@buildhawk.com.au.",
           ts: Date.now(),
         },
       ]);

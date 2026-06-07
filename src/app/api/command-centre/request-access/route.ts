@@ -31,7 +31,7 @@ type Payload = {
 };
 
 const NOTIFY_TO =
-  process.env.CPC_ACCESS_REQUEST_TO || "services@buildhawk.com.au";
+  process.env.CPC_ACCESS_REQUEST_TO || "info@buildhawk.com.au";
 const NOTIFY_FROM =
   process.env.BH_AUTH_FROM_EMAIL ||
   "BuildHawk Cost Plan Console <noreply@buildhawk.com.au>";

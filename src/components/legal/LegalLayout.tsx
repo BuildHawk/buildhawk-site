@@ -50,10 +50,10 @@ export default function LegalLayout({
           <p className="text-[12px] tracking-[-0.005em] text-bh-graphite">
             For questions about these terms, contact{" "}
             <a
-              href="mailto:services@buildhawk.com.au"
+              href="mailto:info@buildhawk.com.au"
               className="text-bh-orange hover:text-bh-orange-700 underline underline-offset-4"
             >
-              services@buildhawk.com.au
+              info@buildhawk.com.au
             </a>
             .
           </p>

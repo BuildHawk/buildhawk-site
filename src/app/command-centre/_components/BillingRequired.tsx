@@ -81,7 +81,7 @@ export default function BillingRequired({
                 Manage billing
               </Link>
               <Link
-                href="mailto:services@buildhawk.com.au?subject=Cost%20Plan%20Console%20billing"
+                href="mailto:info@buildhawk.com.au?subject=Cost%20Plan%20Console%20billing"
                 className="inline-flex items-center justify-center h-11 px-5 rounded-md border border-slate-300 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50"
               >
                 Email support
