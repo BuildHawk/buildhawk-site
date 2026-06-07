@@ -26,7 +26,7 @@ export default function BuilderTermsPage() {
       <h2>2. What Hawktress delivers</h2>
       <p>
         Hawktress provides cost intelligence and project execution support
-        across seven connected stages of the builder's project lifecycle:
+        across seven connected stages of the builder&apos;s project lifecycle:
       </p>
       <table>
         <thead>
@@ -163,7 +163,7 @@ export default function BuilderTermsPage() {
 
       <h2>4. Contract administration and variation control</h2>
       <p>
-        Where a Builder engages BuildHawk's contract administration service, the
+        Where a Builder engages BuildHawk&apos;s contract administration service, the
         following rules apply within Hawktress:
       </p>
       <ul>
@@ -203,10 +203,10 @@ export default function BuilderTermsPage() {
 
       <h2>6. Output and branding</h2>
       <p>
-        All Hawktress outputs use the Builder's brand kit.{" "}
-        <strong>"Powered by Hawktress"</strong> and the BuildHawk logo appear as
+        All Hawktress outputs use the Builder&apos;s brand kit.{" "}
+        <strong>&quot;Powered by Hawktress&quot;</strong> and the BuildHawk logo appear as
         a fixed, non-removable element on all outputs. This requirement is
-        mandatory and is not subject to variation regardless of the Builder's
+        mandatory and is not subject to variation regardless of the Builder&apos;s
         brand preferences.
       </p>
 
@@ -217,7 +217,7 @@ export default function BuilderTermsPage() {
           regional benchmarks
         </li>
         <li>
-          The Builder's identity and project-specific data will never be
+          The Builder&apos;s identity and project-specific data will never be
           disclosed to any other subscriber
         </li>
         <li>
@@ -271,7 +271,7 @@ export default function BuilderTermsPage() {
         Hawktress outputs are provided as intelligence and reference material
         only. They do not constitute professional quantity surveying, legal, or
         financial advice. To the maximum extent permitted by the Australian
-        Consumer Law, BuildHawk's liability is limited to subscription fees paid
+        Consumer Law, BuildHawk&apos;s liability is limited to subscription fees paid
         in the 12 months preceding the claim.
       </p>
 

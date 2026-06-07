@@ -55,7 +55,6 @@ export default async function Image() {
             display: "flex",
           }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={EMBLEM_DATA_URL} alt="" width={520} height={400} />
         </div>
 
@@ -98,7 +97,6 @@ export default async function Image() {
             padding: "60px 80px 0",
           }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={EMBLEM_DATA_URL} alt="" width={140} height={108} />
           <div
             style={{

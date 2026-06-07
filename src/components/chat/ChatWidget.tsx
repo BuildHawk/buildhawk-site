@@ -104,6 +104,7 @@ export default function ChatWidget() {
 
   // Hydrate from sessionStorage after mount.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate messages from sessionStorage after mount (client-only)
     setMessages(loadHistory());
   }, []);
 
@@ -133,6 +134,7 @@ export default function ChatWidget() {
   // Focus input on open + ESC to close.
   useEffect(() => {
     if (!open) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- clear the attention hint when the widget opens
     setHint(false);
     const t = setTimeout(() => inputRef.current?.focus(), 200);
     const onKey = (e: KeyboardEvent) => {
@@ -152,6 +154,7 @@ export default function ChatWidget() {
       id: uid(),
       role: "user",
       content: trimmed,
+      // eslint-disable-next-line react-hooks/purity -- Date.now() runs inside the send() event handler, not during render
       ts: Date.now(),
     };
     setMessages((prev) => [...prev, userMsg]);
@@ -182,6 +185,7 @@ export default function ChatWidget() {
         id: uid(),
         role: "assistant",
         content: replyText,
+        // eslint-disable-next-line react-hooks/purity -- Date.now() runs inside the send() event handler, not during render
         ts: Date.now(),
       };
       setMessages((prev) => [...prev, reply]);

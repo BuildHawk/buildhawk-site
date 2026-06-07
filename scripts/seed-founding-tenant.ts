@@ -23,7 +23,7 @@ import {
   tenants,
   users,
 } from "../src/lib/db/schema";
-import { ids, slugify } from "../src/lib/db/ids";
+import { ids } from "../src/lib/db/ids";
 import { encryptJson } from "../src/lib/crypto";
 
 const TENANT_NAME = "Homes by NH";

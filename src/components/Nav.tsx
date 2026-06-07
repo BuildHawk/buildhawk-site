@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { useEffect, useState } from "react";
 import BrandLockup from "@/components/BrandLockup";
@@ -136,12 +137,12 @@ export default function Nav() {
               />
             </svg>
           </a>
-          <a
+          <Link
             href="/#intake"
             className="hidden sm:inline-flex items-center h-10 px-5 rounded-[8px] bg-bh-ink text-bh-paper text-[13px] tracking-[-0.005em] hover:bg-bh-orange transition-colors"
           >
             Start Brief
-          </a>
+          </Link>
           <button
             type="button"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
@@ -220,13 +221,13 @@ export default function Nav() {
             >
               Call
             </a>
-            <a
+            <Link
               href="/#intake"
               onClick={() => setMobileOpen(false)}
               className="inline-flex items-center justify-center h-12 rounded-[8px] bg-bh-ink text-bh-paper text-[14px] tracking-[-0.005em] hover:bg-bh-orange transition-colors"
             >
               Start Brief
-            </a>
+            </Link>
           </div>
         </div>
       </div>

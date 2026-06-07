@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import Nav from "@/components/Nav";
 
@@ -231,7 +232,7 @@ export default function FaqPage() {
               </h1>
               <p className="mt-6 max-w-2xl text-[17px] md:text-[19px] leading-[1.5] tracking-[-0.005em] text-bh-graphite">
                 The questions builders ask before they engage BuildHawk —
-                answered the same way we'd answer them on the discovery call.
+                answered the same way we&apos;d answer them on the discovery call.
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-[12px] tracking-[0.18em] uppercase text-bh-graphite">
                 <span>{totalQuestions} questions</span>
@@ -350,18 +351,18 @@ export default function FaqPage() {
                 Still have a question
               </p>
               <h2 className="font-medium tracking-[-0.025em] text-[36px] md:text-[56px] leading-[1.05] text-bh-black">
-                If it's not here,
+                If it&apos;s not here,
                 <br />
                 <span className="text-bh-graphite">ask it on the call.</span>
               </h2>
             </div>
             <div className="col-span-12 md:col-span-4 flex flex-col gap-3">
-              <a
+              <Link
                 href="/#intake"
                 className="inline-flex items-center justify-center h-12 px-6 rounded-[8px] bg-bh-ink text-bh-paper text-[14px] tracking-[-0.005em] hover:bg-bh-orange transition-colors"
               >
                 Start a brief
-              </a>
+              </Link>
               <a
                 href="tel:+61433366607"
                 className="inline-flex items-center justify-center h-12 px-6 rounded-[8px] border border-bh-steel/60 text-bh-black text-[14px] tracking-[-0.005em] hover:border-bh-orange hover:text-bh-orange transition-colors"
@@ -381,10 +382,10 @@ export default function FaqPage() {
             </p>
             <nav className="flex flex-wrap items-center gap-x-6 gap-y-3" aria-label="Footer">
               <a href="/articles" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">Articles</a>
-              <a href="/insights" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">Field Notes</a>
+              <Link href="/insights" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">Field Notes</Link>
               <a href="/data-policy" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">Data policy</a>
               <a href="/terms-builders" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">Terms</a>
-              <a href="/" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">← Back to BuildHawk</a>
+              <Link href="/" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">← Back to BuildHawk</Link>
             </nav>
           </div>
         </div>

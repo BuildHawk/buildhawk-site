@@ -71,6 +71,7 @@ export default function CommandPalette({
   // Reset on open/close
   useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reset palette state when it opens
       setQuery("");
       setHighlight(0);
       setAsk({ status: "idle" });

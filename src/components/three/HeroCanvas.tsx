@@ -2,7 +2,6 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useRef, useState } from "react";
-import * as THREE from "three";
 import HouseFrame from "./HouseFrame";
 
 function CameraRig() {
@@ -20,6 +19,7 @@ function CameraRig() {
     return () => window.removeEventListener("mousemove", onMove);
   }, []);
 
+  // eslint-disable-next-line react-hooks/immutability -- react-three-fiber: mutating camera in the useFrame loop is the intended r3f pattern
   useFrame((state) => {
     const t = state.clock.elapsedTime;
     // Base position with subtle ambient drift, then add cursor parallax on top.
@@ -29,6 +29,7 @@ function CameraRig() {
     const parX = target.current.x * 1.4;
     const parY = -target.current.y * 0.7;
     // Lerp toward target for smoothness
+    // eslint-disable-next-line react-hooks/immutability -- react-three-fiber: per-frame camera lerp mutates camera.position by design
     camera.position.x += (baseX + parX - camera.position.x) * 0.045;
     camera.position.y += (baseY + parY - camera.position.y) * 0.045;
     camera.position.z += (baseZ - camera.position.z) * 0.045;

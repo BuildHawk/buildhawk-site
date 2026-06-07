@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { useState } from "react";
 import Image from "next/image";
@@ -133,9 +134,9 @@ export default function Voices() {
           Videos embedded with permission via YouTube. Inclusion does not
           imply endorsement of BuildHawk or Hawktress by the original creators.
           For recommended viewing across the rest of the lifecycle, see our{" "}
-          <a href="/insights" className="text-bh-orange underline underline-offset-4 hover:text-bh-orange-700">
+          <Link href="/insights" className="text-bh-orange underline underline-offset-4 hover:text-bh-orange-700">
             insights archive
-          </a>
+          </Link>
           .
         </p>
       </div>

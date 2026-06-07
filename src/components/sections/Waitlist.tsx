@@ -131,10 +131,10 @@ export default function Waitlist() {
                       </svg>
                     </div>
                     <h3 className="text-[22px] md:text-[26px] tracking-[-0.02em] font-medium">
-                      You're on the list, {name.split(" ")[0] || "thanks"}.
+                      You&apos;re on the list, {name.split(" ")[0] || "thanks"}.
                     </h3>
                     <p className="mt-3 text-bh-graphite text-[15px] leading-[1.55] max-w-md">
-                      We'll be in touch as cohort spots open. Reply to the
+                      We&apos;ll be in touch as cohort spots open. Reply to the
                       confirmation if you want to flag a specific job or
                       timeline.
                     </p>
@@ -211,7 +211,7 @@ export default function Waitlist() {
 
                     <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                       <p className="text-[12px] text-bh-graphite leading-[1.5] max-w-md">
-                        We'll only use your details to evaluate fit and contact
+                        We&apos;ll only use your details to evaluate fit and contact
                         you about the waitlist. See our{" "}
                         <a
                           href="/data-policy"

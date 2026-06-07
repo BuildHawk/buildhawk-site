@@ -100,7 +100,7 @@ export default function DataPolicyPage() {
         Variation and quote data is used by Hawktress to enforce the 5%
         variance threshold. When a variation or quote exceeds this threshold,
         the relevant record is flagged automatically. This flag is visible
-        internally to BuildHawk and the relevant builder's CA. It is not shared
+        internally to BuildHawk and the relevant builder&apos;s CA. It is not shared
         with any other subscriber.
       </p>
 
@@ -132,7 +132,7 @@ export default function DataPolicyPage() {
       <h3>6.2 Subscriber access</h3>
       <p>
         Builders and trades access only their own data and anonymised market
-        benchmarks. No subscriber can access another subscriber's project, cost,
+        benchmarks. No subscriber can access another subscriber&apos;s project, cost,
         or variation data. Supplier profiles are visible to relevant builder
         subscribers as part of the supplier platform product only.
       </p>

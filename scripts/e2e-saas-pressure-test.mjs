@@ -22,7 +22,6 @@ try {
 } catch {}
 
 const SITE = process.env.SITE_URL ?? "https://www.buildhawk.com.au";
-const VERCEL_IP = "76.76.21.21";
 
 const sql = neon(process.env.DATABASE_URL);
 const stamp = Date.now();

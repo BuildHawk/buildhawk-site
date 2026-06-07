@@ -78,7 +78,7 @@ export default function TradeTermsPage() {
           time across regions
         </li>
         <li>
-          <strong>Variance analysis:</strong> where the Trade's own pricing sits
+          <strong>Variance analysis:</strong> where the Trade&apos;s own pricing sits
           relative to the regional rolling average
         </li>
         <li>
@@ -121,7 +121,7 @@ export default function TradeTermsPage() {
           regional benchmarks
         </li>
         <li>
-          The Trade's identity is never disclosed in any benchmark output
+          The Trade&apos;s identity is never disclosed in any benchmark output
           visible to other subscribers
         </li>
         <li>The source of any pricing data is never disclosed</li>
@@ -129,7 +129,7 @@ export default function TradeTermsPage() {
 
       <h2>7. Output standards</h2>
       <p>
-        All Hawktress outputs carry the <strong>"Powered by Hawktress"</strong>{" "}
+        All Hawktress outputs carry the <strong>&quot;Powered by Hawktress&quot;</strong>{" "}
         identifier and the BuildHawk logo as a fixed, non-removable element on
         all outputs.
       </p>
@@ -153,7 +153,7 @@ export default function TradeTermsPage() {
 
       <h2>10. Intellectual property</h2>
       <p>
-        Hawktress outputs are provided for the Trade's own internal business use
+        Hawktress outputs are provided for the Trade&apos;s own internal business use
         only during the subscription period. The Trade may not reproduce,
         resell, or commercially distribute Hawktress data or outputs without
         prior written consent from BuildHawk.
@@ -163,7 +163,7 @@ export default function TradeTermsPage() {
       <p>
         Hawktress outputs are provided as market intelligence and reference
         material only. To the maximum extent permitted by the Australian
-        Consumer Law, BuildHawk's liability is limited to subscription fees paid
+        Consumer Law, BuildHawk&apos;s liability is limited to subscription fees paid
         in the 12 months preceding the claim.
       </p>
 

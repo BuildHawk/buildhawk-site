@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import Nav from "@/components/Nav";
 import ArticleCard from "@/components/blog/ArticleCard";
@@ -134,10 +135,10 @@ export default async function ArticlesPage() {
             </p>
             <nav className="flex flex-wrap items-center gap-x-6 gap-y-3" aria-label="Footer">
               <a href="/faq" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">FAQ</a>
-              <a href="/insights" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">Field Notes</a>
+              <Link href="/insights" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">Field Notes</Link>
               <a href="/data-policy" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">Data policy</a>
               <a href="/terms-builders" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">Terms</a>
-              <a href="/" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">← Back to BuildHawk</a>
+              <Link href="/" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">← Back to BuildHawk</Link>
             </nav>
           </div>
         </div>

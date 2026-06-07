@@ -9,7 +9,6 @@ import * as THREE from "three";
  * Camera does a slow lateral pan across the build as scrollProgress goes 0→1.
  */
 function BuildScene({ p }: { p: number }) {
-  const camRef = useRef<THREE.PerspectiveCamera>(null);
 
   useFrame((state) => {
     const t = state.clock.elapsedTime;

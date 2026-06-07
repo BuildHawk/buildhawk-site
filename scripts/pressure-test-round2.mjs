@@ -283,7 +283,6 @@ await check("benchmarks accepts region/trade/projectType query", async () => {
 section("Member invite flow");
 
 const inviteeEmail = `invitee+${Date.now()}@test.local`;
-let createdInviteId = null;
 
 await check("owner creates an invite (POST /members/invite)", async () => {
   const res = await fetchSite("/api/command-centre/members/invite", {
@@ -306,7 +305,6 @@ await check("invitation row exists with status=pending and correct role", async 
     throw new Error(`wrong role: ${rows[0].role}`);
   if (rows[0].status !== "pending")
     throw new Error(`wrong status: ${rows[0].status}`);
-  createdInviteId = rows[0].id;
 });
 
 await check("members API surfaces the pending invite", async () => {
