@@ -14,6 +14,8 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { upsertContact, createOpportunity } from "@/lib/ghl";
 
+import { clientIp, rateLimit, tooManyRequests } from "@/lib/rate-limit";
+
 export const runtime = "nodejs";
 
 type Payload = {
@@ -125,6 +127,9 @@ If you have questions in the meantime, reply to this email.
 };
 
 export async function POST(req: Request) {
+  const _rl = rateLimit(clientIp(req), { bucket: "request-access", max: 10 });
+  if (!_rl.ok) return tooManyRequests(_rl.retryAfter);
+
   let body: Payload;
   try {
     body = await req.json();

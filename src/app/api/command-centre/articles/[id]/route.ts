@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getActiveContext } from "@/lib/auth";
+import { getActiveContext, isPlatformAdmin } from "@/lib/auth";
 import {
   getDbArticleById,
   updateDbArticle,
@@ -14,6 +14,8 @@ type Params = Promise<{ id: string }>;
 export async function GET(_req: Request, { params }: { params: Params }) {
   const ctx = await getActiveContext().catch(() => null);
   if (!ctx) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  if (!isPlatformAdmin(ctx.user.email))
+    return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
   const article = await getDbArticleById(id);
@@ -24,6 +26,8 @@ export async function GET(_req: Request, { params }: { params: Params }) {
 export async function PUT(req: Request, { params }: { params: Params }) {
   const ctx = await getActiveContext().catch(() => null);
   if (!ctx) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  if (!isPlatformAdmin(ctx.user.email))
+    return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
 
@@ -69,6 +73,8 @@ export async function PUT(req: Request, { params }: { params: Params }) {
 export async function DELETE(_req: Request, { params }: { params: Params }) {
   const ctx = await getActiveContext().catch(() => null);
   if (!ctx) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  if (!isPlatformAdmin(ctx.user.email))
+    return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
   await deleteDbArticle(id);
@@ -78,6 +84,8 @@ export async function DELETE(_req: Request, { params }: { params: Params }) {
 export async function PATCH(_req: Request, { params }: { params: Params }) {
   const ctx = await getActiveContext().catch(() => null);
   if (!ctx) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  if (!isPlatformAdmin(ctx.user.email))
+    return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
   const updated = await togglePublished(id);

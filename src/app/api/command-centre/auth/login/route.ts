@@ -24,6 +24,8 @@ import { users } from "@/lib/db/schema";
 import { verifyPassword } from "@/lib/passwords";
 import { recordAudit } from "@/lib/audit";
 
+import { clientIp, rateLimit, tooManyRequests } from "@/lib/rate-limit";
+
 export const runtime = "nodejs";
 
 // Return a fresh Response per call; reusing a NextResponse instance consumes
@@ -32,6 +34,9 @@ const genericFail = () =>
   NextResponse.json({ ok: false, error: "Email or password is incorrect" }, { status: 401 });
 
 export async function POST(req: Request) {
+  const _rl = rateLimit(clientIp(req), { bucket: "auth-login", max: 8 });
+  if (!_rl.ok) return tooManyRequests(_rl.retryAfter);
+
   if (!isAuthConfigured()) {
     return NextResponse.json(
       { ok: false, error: "Auth not configured." },
