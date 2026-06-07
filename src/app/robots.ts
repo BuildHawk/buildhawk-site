@@ -9,36 +9,21 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://buildhawk.com.au";
  *    /                                  marketing home
  *    /faq, /partners, /insights*, /articles*, /data-policy, /terms-*
  *    /status                            uptime / status page
- *    /command-centre/login              sign-in + request-access (tabbed)
- *    /command-centre/signup             start a workspace (14-day trial)
- *    /command-centre/request-access     founding-cohort access landing
  *
- *  PUBLIC but NOINDEX (auth/payment surfaces — don't pollute search)
- *    nothing right now; everything public is indexable.
+ *  HIDDEN (never crawl, not linked from the public site)
+ *    /command-centre/*                  entire internal surface
+ *    /api/*                             all API routes
  *
- *  GATED (auth required — never crawl)
- *    /command-centre                    dashboard
- *    /command-centre/onboarding         post-signup wizard
- *    /command-centre/settings           plan, integrations, team, audit
- *    /command-centre/new-project        create opportunity
- *    /command-centre/projects/*         workbook editor
- *    /command-centre/architecture       internal diagrams
- *
- *  ALL APIs are crawler-disallowed regardless of gate.
+ *  /command-centre is reachable by direct URL for authorised users
+ *  (proxy.ts enforces the auth gate) but is intentionally invisible
+ *  to search engines and not linked from any public page.
  */
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
         userAgent: "*",
-        allow: [
-          "/",
-          "/command-centre/login",
-          "/command-centre/signup",
-          "/command-centre/request-access",
-        ],
-        // /command-centre is a gated surface; allow exceptions above carve out
-        // the public landings, everything else under it stays out of search.
+        allow: ["/"],
         disallow: ["/api/", "/command-centre"],
       },
     ],
