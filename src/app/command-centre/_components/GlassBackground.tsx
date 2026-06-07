@@ -50,6 +50,7 @@ export default function GlassBackground({
       : "fixed inset-0 -z-10 overflow-hidden bg-[#F5F6FA]";
 
   const setRef = (i: number) => (el: HTMLDivElement | null) => {
+    // eslint-disable-next-line react-hooks/refs -- ref-callback factory assigns to orbsRef.current during commit, not render
     orbsRef.current[i] = el;
   };
 

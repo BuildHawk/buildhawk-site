@@ -221,7 +221,7 @@ export default function OnboardingWizard({
                   </li>
                   <li>
                     Optional: create a Multi Line custom field on opportunities named
-                    "BuildHawk Project Data" (key{" "}
+                    &quot;BuildHawk Project Data&quot; (key{" "}
                     <code className="font-mono bg-white/70 px-1 rounded">bh_project_data</code>
                     ). Paste the field ID below to enable workbook saves.
                   </li>
@@ -281,7 +281,7 @@ export default function OnboardingWizard({
                     onClick={() => setStep(3)}
                     className="text-sm font-semibold text-slate-600 hover:text-slate-900 underline underline-offset-2"
                   >
-                    Skip — I'll connect later from Settings
+                    Skip — I&apos;ll connect later from Settings
                   </button>
                 </div>
               </form>
@@ -291,14 +291,14 @@ export default function OnboardingWizard({
           {step === 3 && (
             <>
               <div className="text-[11px] uppercase tracking-[0.18em] text-emerald-700 font-bold">
-                You're in
+                You&apos;re in
               </div>
               <h2 className="mt-2 text-2xl font-extrabold tracking-tight">
                 {tenant.name} is set up
               </h2>
               <p className="mt-3 text-sm text-slate-600 leading-relaxed max-w-xl">
                 Head into the Cost Plan Console to see your projects, fill workbooks, and
-                let the AI co-pilot draft your director briefs. We're here if you need us.
+                let the AI co-pilot draft your director briefs. We&apos;re here if you need us.
               </p>
               <div className="mt-7 flex gap-3">
                 <Link

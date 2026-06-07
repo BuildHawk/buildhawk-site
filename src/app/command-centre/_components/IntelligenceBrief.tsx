@@ -63,6 +63,7 @@ export default function IntelligenceBriefView({
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch the brief on mount/auto-load (sets loading state)
     if (autoLoad) fetchBrief();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoLoad, input.kind, input.kind === "project" ? input.id : ""]);

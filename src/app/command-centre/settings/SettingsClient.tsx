@@ -281,6 +281,7 @@ function PlanGrid({
       });
       const data = await res.json();
       if (data.ok && data.url) {
+        // eslint-disable-next-line react-hooks/immutability -- browser navigation via window.location.href inside an async checkout handler
         window.location.href = data.url;
       } else {
         alert(data.error ?? "Checkout failed");
@@ -637,7 +638,7 @@ function RequestConnectorPanel({
   if (state.kind === "requested") {
     return (
       <div className="rounded-lg bg-bh-success-50 border border-bh-success-200 text-bh-success-500 text-xs p-2.5">
-        Request received. We'll be in touch to scope the {connector.name} connector.
+        Request received. We&apos;ll be in touch to scope the {connector.name} connector.
       </div>
     );
   }

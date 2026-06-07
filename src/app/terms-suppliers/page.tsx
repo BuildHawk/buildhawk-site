@@ -114,11 +114,11 @@ export default function SupplierTermsPage() {
           anonymised, aggregated regional benchmarks
         </li>
         <li>
-          The Supplier's identity is never disclosed in any benchmark output
+          The Supplier&apos;s identity is never disclosed in any benchmark output
           visible to other subscribers
         </li>
         <li>
-          The Supplier's profile information is visible to relevant builder and
+          The Supplier&apos;s profile information is visible to relevant builder and
           trade subscribers as part of the platform service
         </li>
       </ul>
@@ -136,14 +136,14 @@ export default function SupplierTermsPage() {
         The subscription runs for 12 months from first invoice and renews
         automatically unless either party provides 30 days written notice of
         non-renewal. BuildHawk may terminate immediately if the Supplier
-        provides false pricing information, damages the platform's integrity,
+        provides false pricing information, damages the platform&apos;s integrity,
         or fails to remedy a breach within 14 days of written notice.
       </p>
 
       <h2>9. Limitation of liability</h2>
       <p>
         To the maximum extent permitted by the Australian Consumer Law,
-        BuildHawk's liability is limited to subscription fees paid in the 12
+        BuildHawk&apos;s liability is limited to subscription fees paid in the 12
         months preceding the claim. BuildHawk is not liable for indirect,
         consequential, or economic loss.
       </p>

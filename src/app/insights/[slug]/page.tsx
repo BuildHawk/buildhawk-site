@@ -151,7 +151,7 @@ export default async function ArticlePage({ params }: { params: Params }) {
                 {author.title}
               </p>
             </div>
-            <a
+            <Link
               href="/#intake"
               className="inline-flex items-center justify-between gap-4 rounded-[8px] pl-5 pr-2 h-11 text-[13px] tracking-[-0.005em] font-medium bg-bh-orange text-bh-paper hover:bg-bh-orange-700 transition-colors"
             >
@@ -167,7 +167,7 @@ export default async function ArticlePage({ params }: { params: Params }) {
                   />
                 </svg>
               </span>
-            </a>
+            </Link>
           </div>
         </div>
       </section>

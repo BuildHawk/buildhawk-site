@@ -39,7 +39,7 @@ async function check(name, fn) {
 const section = (t) => console.log(`\n━━━ ${t} ━━━`);
 const fetchSite = (path, init = {}) => fetch(BASE + path, init);
 
-async function mintSession(email, tenantHint) {
+async function mintSession(email) {
   // Caller has already INSERTed the user + membership in tenantHint.
   // Mint a signin magic link, consume it, return the session cookie.
   const rawToken = randomBytes(32).toString("base64url");

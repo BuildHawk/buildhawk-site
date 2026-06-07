@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import Nav from "@/components/Nav";
 
@@ -314,7 +315,7 @@ export default function PeaceOfMindPage() {
               <a href={FLYER_PDF} download className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">Download one-pager</a>
               <a href="/faq" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">FAQ</a>
               <a href="/data-policy" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">Data policy</a>
-              <a href="/" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">← Back to BuildHawk</a>
+              <Link href="/" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">← Back to BuildHawk</Link>
             </nav>
           </div>
         </div>

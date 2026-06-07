@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import Nav from "@/components/Nav";
 
@@ -334,7 +335,7 @@ export default function CommercialSupportPage() {
               <a href={`mailto:${CONTACT_EMAIL}`} className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">{CONTACT_EMAIL}</a>
               <a href="/peace-of-mind" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">Peace of Mind</a>
               <a href="/faq" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">FAQ</a>
-              <a href="/" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">← Back to BuildHawk</a>
+              <Link href="/" className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors">← Back to BuildHawk</Link>
             </nav>
           </div>
         </div>

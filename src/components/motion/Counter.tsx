@@ -39,6 +39,7 @@ export default function Counter({
 
     const reduce = prefersReducedMotion();
     if (reduce) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time set on mount when reduced-motion is preferred (matchMedia is client-only)
       setValue(to);
       return;
     }

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import Nav from "@/components/Nav";
 import ArticleCard from "@/components/blog/ArticleCard";
@@ -88,12 +89,12 @@ export default async function InsightsPage() {
           <p className="text-[14px] tracking-[-0.005em] text-bh-steel/80">
             © {new Date().getFullYear()} BuildHawk Pty Ltd · Geelong, VIC
           </p>
-          <a
+          <Link
             href="/"
             className="text-[13px] tracking-[-0.005em] text-bh-paper hover:text-bh-orange transition-colors"
           >
             ← Back to BuildHawk
-          </a>
+          </Link>
         </div>
         <div className="h-3 md:h-4 bg-bh-orange mt-16" />
       </footer>

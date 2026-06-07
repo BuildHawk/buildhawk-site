@@ -42,6 +42,7 @@ export default function Reveal({
   const [reduce, setReduce] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- read prefers-reduced-motion on mount; matchMedia is unavailable during SSR
     setReduce(prefersReducedMotion());
   }, []);
 
@@ -49,6 +50,7 @@ export default function Reveal({
     const el = ref.current;
     if (!el) return;
     if (reduce) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reveal immediately when reduced motion is preferred
       setVisible(true);
       return;
     }
@@ -78,5 +80,6 @@ export default function Reveal({
         willChange: "opacity, transform",
       };
 
+  // eslint-disable-next-line react-hooks/refs -- passing the ref object (not reading .current) to createElement
   return createElement(as, { ref, className, style }, children);
 }

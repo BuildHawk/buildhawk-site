@@ -1762,7 +1762,7 @@ export default function CommandCentre({
   // Aggregate intelligence payload reused across portfolio brief + AI ask
   const aggregateForPayload = useMemo(
     () => computeAggregate(projects, cashflow, cashflowIsReal),
-    [projects, cashflow],
+    [projects, cashflow, cashflowIsReal],
   );
   const intelligencePayload = useMemo(
     () => ({

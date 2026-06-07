@@ -31,7 +31,7 @@ export default function NotFound() {
                 Off the run sheet.
                 <br />
                 <span className="text-bh-graphite">
-                  This page isn't on site.
+                  This page isn&apos;t on site.
                 </span>
               </h1>
               <p className="mt-6 max-w-2xl text-[16px] md:text-[19px] leading-[1.55] tracking-[-0.005em] text-bh-graphite">

@@ -90,5 +90,6 @@ export default function Tilt({
     };
   }, [max, lift]);
 
+  // eslint-disable-next-line react-hooks/refs -- passing the ref object (not reading .current) to createElement
   return createElement(as, { ref, className, style }, children);
 }

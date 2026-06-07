@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { useEffect, useRef } from "react";
 import BrandLockup from "@/components/BrandLockup";
@@ -164,12 +165,12 @@ export default function CtaFooter() {
               Hawktress
             </p>
             <ul className="space-y-2 text-[13px] tracking-[-0.005em]">
-              <li><a href="/#hawktress" className="text-bh-paper hover:text-bh-orange transition-colors">Lifecycle</a></li>
-              <li><a href="/#how" className="text-bh-paper hover:text-bh-orange transition-colors">How it works</a></li>
-              <li><a href="/#pricing" className="text-bh-paper hover:text-bh-orange transition-colors">Pricing</a></li>
+              <li><Link href="/#hawktress" className="text-bh-paper hover:text-bh-orange transition-colors">Lifecycle</Link></li>
+              <li><Link href="/#how" className="text-bh-paper hover:text-bh-orange transition-colors">How it works</Link></li>
+              <li><Link href="/#pricing" className="text-bh-paper hover:text-bh-orange transition-colors">Pricing</Link></li>
               <li><a href="/partners" className="text-bh-paper hover:text-bh-orange transition-colors">Partners</a></li>
-              <li><a href="/#about" className="text-bh-paper hover:text-bh-orange transition-colors">About</a></li>
-              <li><a href="/#intake" className="text-bh-paper hover:text-bh-orange transition-colors">Start a brief</a></li>
+              <li><Link href="/#about" className="text-bh-paper hover:text-bh-orange transition-colors">About</Link></li>
+              <li><Link href="/#intake" className="text-bh-paper hover:text-bh-orange transition-colors">Start a brief</Link></li>
             </ul>
           </div>
 
@@ -180,7 +181,7 @@ export default function CtaFooter() {
             <ul className="space-y-2 text-[13px] tracking-[-0.005em]">
               <li><a href="/articles" className="text-bh-paper hover:text-bh-orange transition-colors">Articles</a></li>
               <li><a href="/faq" className="text-bh-paper hover:text-bh-orange transition-colors">FAQ</a></li>
-              <li><a href="/insights" className="text-bh-paper hover:text-bh-orange transition-colors">Field Notes</a></li>
+              <li><Link href="/insights" className="text-bh-paper hover:text-bh-orange transition-colors">Field Notes</Link></li>
               <li><a href="tel:+61433366607" className="text-bh-paper hover:text-bh-orange transition-colors">Call us</a></li>
               <li><a href="mailto:info@buildhawk.com.au" className="text-bh-paper hover:text-bh-orange transition-colors">Email us</a></li>
             </ul>
