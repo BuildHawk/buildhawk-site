@@ -59,14 +59,14 @@ Pick the form on this page that matches what you need. Both come straight to the
 • Project to discuss: [Start a brief](https://buildhawk.com.au/#intake)
 • Early access to the Hawktress platform: [Join the waitlist](https://buildhawk.com.au/#waitlist)
 
-Urgent? services@buildhawk.com.au or +61 433 366 607`;
+Urgent? info@buildhawk.com.au or +61 433 366 607`;
 
 const SYSTEM_PROMPT = `You are BuildHawk's Estimate Intake assistant, powered by Hawktress. You are not a named character; you are the firm's front desk workflow for qualifying and routing enquiries.
 
 # Who we are
 BuildHawk is a precision construction estimating service for Australian residential builders. Tagline: "Precision Estimating. Disciplined Delivery."
 Hawktress is BuildHawk's software platform, a subscription estimating workspace for builders and trades with a supplier directory. Currently in early-access waitlist.
-Site: buildhawk.com.au. Reception inbox: services@buildhawk.com.au. Phone: +61 433 366 607.
+Site: buildhawk.com.au. Reception inbox: info@buildhawk.com.au. Phone: +61 433 366 607.
 
 # Your job
 Your job is intake. Identify who the visitor is, what they need, and capture enough information to hand them to the right person on the BuildHawk team. You are not a salesperson and not a free estimating tool. You qualify and route.
@@ -77,7 +77,7 @@ Builder interested in Hawktress: capture company, role, current estimating appro
 Trade (subcontractor): interested in being on the Hawktress platform. Capture trade, region, company. Route to the waitlist.
 Supplier: interested in listing products. Capture company, product category. Route to platform listing enquiry.
 Owner-builder or homeowner: BuildHawk works through licensed builders, not direct-to-homeowner. Be polite, suggest they engage a builder first, point to Articles.
-Recruiter, cold pitch, job seeker: politely deflect to services@buildhawk.com.au.
+Recruiter, cold pitch, job seeker: politely deflect to info@buildhawk.com.au.
 
 # Hard rules
 Never quote a price, fee, turnaround, or timeline that is not on buildhawk.com.au. If asked, say pricing depends on scope and the team will quote after a short brief. Point to the Pricing page for current tiers.
@@ -104,7 +104,7 @@ Pricing: https://buildhawk.com.au/pricing
 How it works: https://buildhawk.com.au/how-it-works
 Articles: https://buildhawk.com.au/articles
 FAQ: https://buildhawk.com.au/faq
-Email: services@buildhawk.com.au
+Email: info@buildhawk.com.au
 Phone: +61 433 366 607`;
 
 const LEAD_TOOL = {
@@ -185,7 +185,7 @@ export async function POST(req: Request) {
   if (!limit.ok) {
     const mins = Math.max(1, Math.ceil((limit.retryAfter || 60) / 60));
     return NextResponse.json({
-      text: `You've hit our chat limit for now. Email services@buildhawk.com.au or call +61 433 366 607 and the team will pick it up. (Try chat again in about ${mins} min.)`,
+      text: `You've hit our chat limit for now. Email info@buildhawk.com.au or call +61 433 366 607 and the team will pick it up. (Try chat again in about ${mins} min.)`,
     });
   }
 
@@ -242,7 +242,7 @@ export async function POST(req: Request) {
     if (!text) {
       text = lead
         ? "Got it. The team will be in touch within one business day. Anything else you want to add?"
-        : "Sorry, can you say that again? Or email services@buildhawk.com.au.";
+        : "Sorry, can you say that again? Or email info@buildhawk.com.au.";
     }
 
     return NextResponse.json({ text, lead });

@@ -65,10 +65,10 @@ export default async function StatusPage() {
           <p className="mt-3 text-sm text-bh-graphite">
             We couldn&apos;t reach the health endpoint. If this persists, email{" "}
             <a
-              href="mailto:services@buildhawk.com.au"
+              href="mailto:info@buildhawk.com.au"
               className="font-semibold underline underline-offset-2"
             >
-              services@buildhawk.com.au
+              info@buildhawk.com.au
             </a>
             .
           </p>
@@ -124,10 +124,10 @@ export default async function StatusPage() {
         <p className="mt-10 text-[12px] text-bh-graphite">
           For incidents or planned maintenance, email{" "}
           <a
-            href="mailto:services@buildhawk.com.au"
+            href="mailto:info@buildhawk.com.au"
             className="font-semibold underline underline-offset-2"
           >
-            services@buildhawk.com.au
+            info@buildhawk.com.au
           </a>
           .
         </p>

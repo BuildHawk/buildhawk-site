@@ -157,7 +157,7 @@ export default function DataPolicyPage() {
       <h2>9. Privacy complaints</h2>
       <p>
         Complaints may be lodged in writing to{" "}
-        <a href="mailto:services@buildhawk.com.au">services@buildhawk.com.au</a>.
+        <a href="mailto:info@buildhawk.com.au">info@buildhawk.com.au</a>.
         BuildHawk will acknowledge within 5 business days and respond
         substantively within 30 days. Unresolved complaints may be escalated to
         the Office of the Australian Information Commissioner (OAIC) at{" "}
