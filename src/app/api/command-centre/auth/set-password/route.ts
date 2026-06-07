@@ -14,9 +14,14 @@ import { users } from "@/lib/db/schema";
 import { hashPassword, verifyPassword } from "@/lib/passwords";
 import { recordAudit } from "@/lib/audit";
 
+import { clientIp, rateLimit, tooManyRequests } from "@/lib/rate-limit";
+
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
+  const _rl = rateLimit(clientIp(req), { bucket: "auth-set-password", max: 8 });
+  if (!_rl.ok) return tooManyRequests(_rl.retryAfter);
+
   const ctx = await getActiveContext();
   if (!ctx) {
     return NextResponse.json({ ok: false, error: "Not signed in" }, { status: 401 });

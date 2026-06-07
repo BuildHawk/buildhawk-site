@@ -11,9 +11,14 @@ import { db } from "@/lib/db/client";
 import { users } from "@/lib/db/schema";
 import { renderMagicLinkEmail, magicLinkUrl, sendAuthEmail } from "../_email";
 
+import { clientIp, rateLimit, tooManyRequests } from "@/lib/rate-limit";
+
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
+  const _rl = rateLimit(clientIp(req), { bucket: "auth-magic-link", max: 8 });
+  if (!_rl.ok) return tooManyRequests(_rl.retryAfter);
+
   if (!isAuthConfigured()) {
     return NextResponse.json(
       {

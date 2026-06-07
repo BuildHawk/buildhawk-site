@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getActiveContext } from "@/lib/auth";
+import { getActiveContext, isPlatformAdmin } from "@/lib/auth";
 import { getAllDbArticlesAdmin, createDbArticle } from "@/lib/db-articles";
 
 export const runtime = "nodejs";
@@ -7,6 +7,8 @@ export const runtime = "nodejs";
 export async function GET() {
   const ctx = await getActiveContext().catch(() => null);
   if (!ctx) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  if (!isPlatformAdmin(ctx.user.email))
+    return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
 
   const articles = await getAllDbArticlesAdmin();
   return NextResponse.json({ ok: true, articles });
@@ -15,6 +17,8 @@ export async function GET() {
 export async function POST(req: Request) {
   const ctx = await getActiveContext().catch(() => null);
   if (!ctx) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  if (!isPlatformAdmin(ctx.user.email))
+    return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
 
   let body: Record<string, unknown>;
   try {

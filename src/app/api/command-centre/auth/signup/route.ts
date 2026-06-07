@@ -9,12 +9,17 @@ import {
 } from "@/lib/auth";
 import { magicLinkUrl, renderMagicLinkEmail, sendAuthEmail } from "../_email";
 
+import { clientIp, rateLimit, tooManyRequests } from "@/lib/rate-limit";
+
 export const runtime = "nodejs";
 
 const ALLOWED_PLANS = ["starter", "pro", "enterprise"] as const;
 type Plan = (typeof ALLOWED_PLANS)[number];
 
 export async function POST(req: Request) {
+  const _rl = rateLimit(clientIp(req), { bucket: "auth-signup", max: 8 });
+  if (!_rl.ok) return tooManyRequests(_rl.retryAfter);
+
   if (!isAuthConfigured()) {
     return NextResponse.json(
       { ok: false, error: "Auth not configured." },

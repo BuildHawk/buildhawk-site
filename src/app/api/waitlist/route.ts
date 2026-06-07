@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { upsertContact, createOpportunity } from "@/lib/ghl";
 
+import { clientIp, rateLimit, tooManyRequests } from "@/lib/rate-limit";
+
 export const runtime = "nodejs";
 
 type WaitlistPayload = {
@@ -39,6 +41,9 @@ function isValidEmail(s: string): boolean {
 }
 
 export async function POST(req: Request) {
+  const _rl = rateLimit(clientIp(req), { bucket: "waitlist", max: 10 });
+  if (!_rl.ok) return tooManyRequests(_rl.retryAfter);
+
   let payload: WaitlistPayload;
   try {
     payload = (await req.json()) as WaitlistPayload;

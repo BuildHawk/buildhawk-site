@@ -128,6 +128,23 @@ export function isSigninAllowed(email: string): boolean {
   return allowed.includes(normalizeEmail(email));
 }
 
+/**
+ * BH_ADMIN_EMAILS  comma-separated emails permitted to manage the GLOBAL CMS
+ *                  (articles). The CMS is not tenant-scoped, so write/read of
+ *                  drafts must be restricted to platform operators — being
+ *                  signed into any tenant is NOT sufficient.
+ *
+ * Fail-closed: when unset, NO ONE is a platform admin (article management is
+ * disabled until the allowlist is configured in the environment).
+ */
+export function isPlatformAdmin(email: string | null | undefined): boolean {
+  if (!email) return false;
+  const list = process.env.BH_ADMIN_EMAILS;
+  if (!list) return false; // no admins configured -> deny
+  const allowed = list.split(",").map((e) => e.trim().toLowerCase()).filter(Boolean);
+  return allowed.includes(normalizeEmail(email));
+}
+
 /* ------------------------------------------------------------------ */
 /* Session cookie                                                     */
 /* ------------------------------------------------------------------ */

@@ -39,9 +39,23 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // If auth secret isn't set, the gate stays open (lets you bootstrap locally).
+  // If the auth secret isn't set, allow bootstrap in development only. In
+  // production a missing secret must FAIL CLOSED — never silently disable the
+  // gate on every protected route.
   const secret = process.env.BH_AUTH_SECRET;
-  if (!secret) return NextResponse.next();
+  if (!secret) {
+    if (process.env.NODE_ENV !== "production") return NextResponse.next();
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json(
+        { ok: false, error: "Auth not configured" },
+        { status: 503 },
+      );
+    }
+    const loginUrl = req.nextUrl.clone();
+    loginUrl.pathname = "/command-centre/login";
+    loginUrl.searchParams.set("next", pathname);
+    return NextResponse.redirect(loginUrl);
+  }
 
   const token = req.cookies.get(SESSION_COOKIE)?.value;
   const session = await verifyEdgeSession(token, secret);
