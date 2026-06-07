@@ -1,48 +1,179 @@
-"use client";
-
-import Tilt from "@/components/motion/Tilt";
-
-type Tier = {
+type Plan = {
   name: string;
   price: string;
   cadence: string;
+  meta?: string;
   blurb: string;
   features: string[];
-  cta: string;
-  href: string;
-  featured: boolean;
+  featured?: boolean;
 };
 
-const tiers: Tier[] = [
+type Offering = {
+  id: string;
+  eyebrow: string;
+  title: string;
+  blurb: string;
+  priceRange: string;
+  plans: Plan[];
+  cta: { label: string; href: string };
+  defaultOpen?: boolean;
+};
+
+const offerings: Offering[] = [
   {
-    name: "Base",
-    price: "From $2,750",
-    cadence: "/ month",
-    blurb: "For builders running one or two live projects who want a precise estimating partner without committing to a full annual workspace.",
-    features: [
-      "Estimating tailored to the scope you bring",
-      "Margin and cost tracking through delivery",
-      "Brief to handover, run with our team",
+    id: "commercial-support",
+    eyebrow: "Priced to your turnover",
+    title: "Commercial support",
+    blurb:
+      "Three tiers from a single detailed estimate to dedicated oversight across your pipeline. Understand the true cost of a project before you sign, and keep control of the budget through construction.",
+    priceRange: "$1,150 / est – $5,850 / mo",
+    defaultOpen: true,
+    cta: { label: "View commercial support", href: "/commercial-support" },
+    plans: [
+      {
+        name: "Foundation",
+        price: "$1,150",
+        cadence: "per estimate",
+        meta: "$0 – $800k turnover",
+        blurb:
+          "$1,500 implementation. Execution quoted upfront, around $3,000 on a $200k build.",
+        features: [
+          "Detailed trade-by-trade estimate with real supplier pricing",
+          "Scope gaps identified before the contract is signed",
+          "Purchase orders, procurement planning and cost tracking",
+          "Monthly reporting. Fortnightly BuildHawk Huddles.",
+        ],
+      },
+      {
+        name: "Growth",
+        price: "$2,750",
+        cadence: "/ month",
+        meta: "$800k – $3M turnover",
+        blurb:
+          "Per month, one active project. +$1,550 per month per active project, capped at $5,850.",
+        features: [
+          "Weekly BuildHawk Huddles and variation management",
+          "Margin monitoring and cashflow forecasting",
+          "Procurement oversight and a dedicated contact",
+          "Commercial performance reviewed across every job.",
+        ],
+        featured: true,
+      },
+      {
+        name: "Performance",
+        price: "$5,850",
+        cadence: "/ month",
+        meta: "$3M – $6M turnover",
+        blurb:
+          "Supports up to four active projects. Includes up to four estimates a year.",
+        features: [
+          "Priority estimating turnaround and margin analysis",
+          "Dedicated commercial oversight across active projects",
+          "Monthly director review and commercial planning",
+          "Weekly reporting and business cashflow forecasting.",
+        ],
+      },
     ],
-    cta: "Start a brief",
-    href: "#intake",
-    featured: false,
   },
   {
-    name: "Unlimited",
-    price: "From $5,850",
-    cadence: "/ month",
-    blurb: "Up to 4 active jobs at a time. Built for builders with consistent pipeline who want a fixed monthly cost and a back-office team that flexes with the work.",
-    features: [
-      "Up to 4 active projects",
-      "Estimating, CA and live margin tracking",
-      "Priority response and rolling planning cadence",
+    id: "peace-of-mind",
+    eyebrow: "Buying, not building?",
+    title: "Peace of Mind",
+    blurb:
+      "Independent quote review for homeowners. Before you sign a building contract, we line your builder quotes up apples for apples and flag the gaps.",
+    priceRange: "$499 + GST",
+    cta: { label: "Learn more", href: "/peace-of-mind" },
+    plans: [
+      {
+        name: "Quote review",
+        price: "$499",
+        cadence: "+ GST",
+        meta: "Fully online · up to 3 quotes",
+        blurb:
+          "Independent, third-party review of your builder quotes against your plans. Report within 5 business days.",
+        features: [
+          "Quotes lined up apples for apples",
+          "Scope gaps, under-allowances and variation risk flagged",
+          "Plain-English report you can take back to your builder",
+        ],
+      },
     ],
-    cta: "Talk to us",
-    href: "#intake",
-    featured: true,
   },
 ];
+
+function PlanCard({ plan }: { plan: Plan }) {
+  return (
+    <article
+      className={`relative flex flex-col p-6 md:p-7 border transition-colors ${
+        plan.featured
+          ? "bg-bh-ink text-bh-paper border-bh-ink shadow-[0_30px_60px_-20px_rgba(222,81,35,0.25)]"
+          : "bg-bh-white text-bh-black border-bh-steel/60 hover:border-bh-graphite/60"
+      }`}
+    >
+      {plan.featured && (
+        <span className="absolute -top-3 left-6 inline-flex items-center h-6 px-2.5 rounded-full bg-bh-orange text-bh-paper text-[10px] tracking-[0.18em] uppercase font-medium">
+          Recommended
+        </span>
+      )}
+      <div className="flex items-baseline justify-between gap-3 mb-5">
+        <h4
+          className={`text-[18px] md:text-[20px] font-medium tracking-[-0.015em] ${
+            plan.featured ? "text-bh-paper" : "text-bh-black"
+          }`}
+        >
+          {plan.name}
+        </h4>
+        {plan.meta && (
+          <span
+            className={`text-[11px] tracking-[0.04em] uppercase text-right ${
+              plan.featured ? "text-bh-steel/80" : "text-bh-graphite"
+            }`}
+          >
+            {plan.meta}
+          </span>
+        )}
+      </div>
+      <div className="mb-6">
+        <p className="flex items-baseline gap-2 flex-wrap">
+          <span
+            className={`font-medium tracking-[-0.03em] tabular-nums text-[36px] md:text-[44px] leading-[1] ${
+              plan.featured ? "text-bh-orange" : "text-bh-black"
+            }`}
+          >
+            {plan.price}
+          </span>
+          <span
+            className={`text-[12px] tracking-[0.04em] uppercase ${
+              plan.featured ? "text-bh-steel/80" : "text-bh-graphite"
+            }`}
+          >
+            {plan.cadence}
+          </span>
+        </p>
+        <p
+          className={`mt-3 text-[13px] leading-[1.5] tracking-[-0.005em] ${
+            plan.featured ? "text-bh-steel/90" : "text-bh-graphite"
+          }`}
+        >
+          {plan.blurb}
+        </p>
+      </div>
+      <ul className="space-y-2.5">
+        {plan.features.map((line) => (
+          <li
+            key={line}
+            className={`flex items-start gap-2.5 text-[13px] leading-[1.45] ${
+              plan.featured ? "text-bh-steel" : "text-bh-graphite"
+            }`}
+          >
+            <span className="mt-1.5 inline-block w-1 h-1 rounded-full flex-none bg-bh-orange" />
+            <span>{line}</span>
+          </li>
+        ))}
+      </ul>
+    </article>
+  );
+}
 
 export default function Pricing() {
   return (
@@ -65,148 +196,110 @@ export default function Pricing() {
               <span className="text-bh-graphite">Priced around your scope.</span>
             </h2>
             <p className="mt-6 max-w-2xl text-[14px] md:text-[17px] leading-[1.5] tracking-[-0.005em] text-bh-graphite">
-              Two simple starting points. Every quote is tailored after a short
-              brief, so what you pay matches the work and the number of jobs in
-              your pipeline.
+              Every offering in one place. Open the one that fits your situation
+              — each quote is tailored after a short brief, so what you pay
+              matches the work and the number of jobs in your pipeline.
             </p>
           </div>
         </div>
 
-        {/* Tier cards */}
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 bh-pricing-grid">
-          {tiers.map((t, i) => (
-            <Tilt
-              as="article"
-              key={t.name}
-              max={3}
-              lift={4}
-              className={`relative flex flex-col p-6 md:p-7 min-h-[420px] border transition-colors bh-pricing-card ${
-                t.featured
-                  ? "bg-bh-ink text-bh-paper border-bh-ink shadow-[0_30px_60px_-20px_rgba(222,81,35,0.25)]"
-                  : "bg-bh-white text-bh-black border-bh-steel/60 hover:border-bh-graphite/60"
-              }`}
-              style={{ animationDelay: `${i * 80}ms` }}
+        {/* Offerings — one dropdown per offering */}
+        <div className="border-t border-bh-steel/60">
+          {offerings.map((o) => (
+            <details
+              key={o.id}
+              id={o.id}
+              name="bh-pricing"
+              open={o.defaultOpen}
+              className="bh-disclosure group border-b border-bh-steel/60 scroll-mt-24"
             >
-              {t.featured && (
-                <span className="absolute -top-3 left-6 inline-flex items-center h-6 px-2.5 rounded-full bg-bh-orange text-bh-paper text-[10px] tracking-[0.18em] uppercase font-medium">
-                  Recommended
-                </span>
-              )}
-              <h3
-                className={`text-[18px] md:text-[20px] font-medium tracking-[-0.015em] mb-5 ${
-                  t.featured ? "text-bh-paper" : "text-bh-black"
-                }`}
-              >
-                {t.name}
-              </h3>
-              <div className="mb-6">
-                <p className="flex items-baseline gap-2 flex-wrap">
-                  <span
-                    className={`font-medium tracking-[-0.03em] tabular-nums ${
-                      t.featured ? "text-bh-orange" : "text-bh-black"
-                    } text-[40px] md:text-[48px] leading-[1]`}
-                  >
-                    {t.price}
+              <summary className="flex items-start justify-between gap-6 cursor-pointer list-none py-6 md:py-8 -mx-4 px-4 rounded-[10px] hover:bg-bh-cloud/40 transition-colors duration-200 [&::-webkit-details-marker]:hidden">
+                <div className="min-w-0">
+                  <p className="text-[11px] tracking-[0.2em] uppercase text-bh-orange mb-2">
+                    {o.eyebrow}
+                  </p>
+                  <h3 className="text-[24px] md:text-[34px] font-medium tracking-[-0.02em] leading-[1.1] text-bh-black group-hover:text-bh-orange transition-colors">
+                    {o.title}
+                  </h3>
+                  <p className="mt-3 max-w-xl text-[13px] md:text-[15px] leading-[1.55] text-bh-graphite">
+                    {o.blurb}
+                  </p>
+                </div>
+                <div className="flex flex-none items-center gap-4 md:gap-6 pt-1">
+                  <span className="hidden sm:inline-flex items-center h-7 px-3 rounded-full border border-bh-steel/70 text-[12px] md:text-[13px] font-medium tracking-[-0.01em] tabular-nums text-bh-graphite whitespace-nowrap group-hover:border-bh-orange/60 transition-colors">
+                    {o.priceRange}
                   </span>
                   <span
-                    className={`text-[12px] tracking-[0.04em] uppercase ${
-                      t.featured ? "text-bh-steel/80" : "text-bh-graphite"
-                    }`}
-                  >
-                    {t.cadence}
-                  </span>
-                </p>
-                <p
-                  className={`mt-3 text-[13px] leading-[1.5] tracking-[-0.005em] ${
-                    t.featured ? "text-bh-steel/90" : "text-bh-graphite"
-                  }`}
-                >
-                  {t.blurb}
-                </p>
-              </div>
-
-              <ul className="space-y-2.5 mb-8">
-                {t.features.map((line) => (
-                  <li
-                    key={line}
-                    className={`flex items-start gap-2.5 text-[13px] leading-[1.45] ${
-                      t.featured ? "text-bh-steel" : "text-bh-graphite"
-                    }`}
-                  >
-                    <span className="mt-1.5 inline-block w-1 h-1 rounded-full flex-none bg-bh-orange" />
-                    <span>{line}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <a
-                href={t.href}
-                className={`mt-auto inline-flex items-center justify-between gap-4 rounded-[8px] pl-5 pr-2 h-11 text-[13px] tracking-[-0.005em] font-medium transition-colors ${
-                  t.featured
-                    ? "bg-bh-orange text-bh-paper hover:bg-bh-orange-700"
-                    : "bg-bh-ink text-bh-paper hover:bg-bh-orange"
-                }`}
-              >
-                {t.cta}
-                <span
-                  className={`inline-flex items-center justify-center rounded-full w-7 h-7 ${
-                    t.featured ? "bg-bh-paper/20" : "bg-bh-paper/15"
-                  }`}
-                >
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 14 14"
-                    fill="none"
                     aria-hidden
+                    className="inline-flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full border border-bh-steel/60 text-bh-graphite group-hover:border-bh-orange group-hover:text-bh-orange transition-colors"
                   >
-                    <path
-                      d="M3 7h8m0 0L7.5 3.5M11 7l-3.5 3.5"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </span>
-              </a>
-            </Tilt>
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      className="transition-transform duration-300 group-open:rotate-45"
+                    >
+                      <path
+                        d="M7 1.5v11M1.5 7h11"
+                        stroke="currentColor"
+                        strokeWidth="1.4"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                  </span>
+                </div>
+              </summary>
+
+              <div className="pb-8 md:pb-12">
+                {/* price range on mobile, where the summary hides it */}
+                <div className="sm:hidden mb-5">
+                  <span className="inline-flex items-center h-7 px-3 rounded-full border border-bh-steel/70 text-[12px] font-medium tracking-[-0.01em] tabular-nums text-bh-graphite">
+                    {o.priceRange}
+                  </span>
+                </div>
+
+                <div
+                  className={`grid gap-6 grid-cols-1 ${
+                    o.plans.length >= 3
+                      ? "lg:grid-cols-3"
+                      : o.plans.length === 2
+                        ? "md:grid-cols-2"
+                        : "md:max-w-md"
+                  }`}
+                >
+                  {o.plans.map((plan) => (
+                    <PlanCard key={plan.name} plan={plan} />
+                  ))}
+                </div>
+
+                <a
+                  href={o.cta.href}
+                  className="mt-7 inline-flex items-center gap-3 rounded-[8px] pl-5 pr-2 h-11 text-[13px] tracking-[-0.005em] font-medium bg-bh-ink text-bh-paper hover:bg-bh-orange transition-colors"
+                >
+                  {o.cta.label}
+                  <span className="inline-flex items-center justify-center rounded-full w-7 h-7 bg-bh-paper/15">
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      aria-hidden
+                    >
+                      <path
+                        d="M3 7h8m0 0L7.5 3.5M11 7l-3.5 3.5"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                </a>
+              </div>
+            </details>
           ))}
         </div>
-
-        {/* Builder callout: full Commercial Support structure */}
-        <a
-          href="/commercial-support"
-          className="group mt-8 md:mt-12 flex flex-col sm:flex-row sm:items-center justify-between gap-5 rounded-[10px] bg-bh-ink text-bh-paper p-6 md:p-8 transition-shadow hover:shadow-[0_24px_50px_-24px_rgba(222,81,35,0.45)]"
-        >
-          <div>
-            <p className="text-[11px] tracking-[0.2em] uppercase text-bh-orange mb-2">
-              Priced to your turnover
-            </p>
-            <p className="text-[18px] md:text-[22px] font-medium tracking-[-0.015em] text-bh-paper leading-[1.25]">
-              Commercial support, built around every active project.
-            </p>
-            <p className="mt-2 text-[13px] md:text-[14px] leading-[1.5] text-bh-steel max-w-xl">
-              See the full structure: three tiers from a single detailed
-              estimate to dedicated oversight across your pipeline. Foundation,
-              Growth and Performance.
-            </p>
-          </div>
-          <span className="inline-flex flex-none items-center gap-3 rounded-[8px] pl-5 pr-2 h-11 text-[13px] tracking-[-0.005em] font-medium bg-bh-orange text-bh-paper group-hover:bg-bh-orange-700 transition-colors">
-            View commercial support
-            <span className="inline-flex items-center justify-center rounded-full w-7 h-7 bg-bh-paper/20">
-              <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden>
-                <path
-                  d="M3 7h8m0 0L7.5 3.5M11 7l-3.5 3.5"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-          </span>
-        </a>
 
         {/* Footnote */}
         <div className="mt-10 md:mt-12 grid grid-cols-12 gap-6 md:gap-8">
@@ -214,8 +307,8 @@ export default function Pricing() {
             <p className="text-[12px] tracking-[-0.005em] text-bh-graphite leading-[1.5]">
               Indicative starting prices, ex GST. Final pricing is set after a
               short brief so it matches your scope, project count and cadence.
-              Payment terms 14 days from invoice. Full conditions in the
-              builder terms.
+              Payment terms 14 days from invoice. Full conditions in the builder
+              terms.
             </p>
             <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-[12px] tracking-[-0.005em]">
               <a
@@ -233,39 +326,6 @@ export default function Pricing() {
             </div>
           </div>
         </div>
-
-        {/* Homeowner callout: Peace of Mind quote review */}
-        <a
-          href="/peace-of-mind"
-          className="group mt-10 md:mt-14 flex flex-col sm:flex-row sm:items-center justify-between gap-5 rounded-[10px] border border-bh-steel/60 bg-bh-cloud p-6 md:p-8 hover:border-bh-orange transition-colors"
-        >
-          <div>
-            <p className="text-[11px] tracking-[0.2em] uppercase text-bh-orange mb-2">
-              Buying, not building?
-            </p>
-            <p className="text-[18px] md:text-[22px] font-medium tracking-[-0.015em] text-bh-black leading-[1.25]">
-              Peace of Mind: independent quote review for homeowners.
-            </p>
-            <p className="mt-2 text-[13px] md:text-[14px] leading-[1.5] text-bh-graphite max-w-xl">
-              Before you sign a building contract, we line your builder quotes
-              up apples for apples and flag the gaps. $499 + GST, fully online.
-            </p>
-          </div>
-          <span className="inline-flex flex-none items-center gap-3 rounded-[8px] pl-5 pr-2 h-11 text-[13px] tracking-[-0.005em] font-medium bg-bh-ink text-bh-paper group-hover:bg-bh-orange transition-colors">
-            Learn more
-            <span className="inline-flex items-center justify-center rounded-full w-7 h-7 bg-bh-paper/15">
-              <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden>
-                <path
-                  d="M3 7h8m0 0L7.5 3.5M11 7l-3.5 3.5"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-          </span>
-        </a>
       </div>
     </section>
   );
