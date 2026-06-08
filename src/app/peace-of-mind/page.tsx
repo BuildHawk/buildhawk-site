@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import Nav from "@/components/Nav";
+import StartForm from "./StartForm";
 
 export const metadata: Metadata = {
   title: "Peace of Mind · Independent quote review for homeowners · BuildHawk",
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
 
 const FLYER_PDF = "/buildhawk-peace-of-mind.pdf";
 const CONTACT_EMAIL = "info@buildhawk.com.au";
-const REVIEW_MAILTO = `mailto:${CONTACT_EMAIL}?subject=Peace%20of%20Mind%20quote%20review`;
+const START_ANCHOR = "#start";
 
 const mismatches = [
   "One builder includes site costs. Another does not.",
@@ -100,7 +101,7 @@ export default function PeaceOfMindPage() {
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <a
-                  href={REVIEW_MAILTO}
+                  href={START_ANCHOR}
                   className="inline-flex items-center justify-center h-12 px-6 rounded-[8px] bg-bh-ink text-bh-paper text-[14px] tracking-[-0.005em] hover:bg-bh-orange transition-colors"
                 >
                   Start your review
@@ -211,7 +212,7 @@ export default function PeaceOfMindPage() {
                 One flat fee, whether you have one quote or three.
               </p>
               <a
-                href={REVIEW_MAILTO}
+                href={START_ANCHOR}
                 className="mt-7 inline-flex items-center justify-between gap-4 rounded-[8px] pl-5 pr-2 h-12 text-[14px] tracking-[-0.005em] font-medium bg-bh-orange text-bh-paper hover:bg-bh-orange-700 transition-colors"
               >
                 Get started
@@ -252,6 +253,45 @@ export default function PeaceOfMindPage() {
         </div>
       </section>
 
+      {/* Tick-and-flick form + uploads */}
+      <section id="start" className="scroll-mt-24 py-16 md:py-24 border-t border-bh-steel/40">
+        <div className="mx-auto max-w-[1480px] px-6 md:px-10">
+          <div className="grid grid-cols-12 gap-8 md:gap-12">
+            <div className="col-span-12 md:col-span-4">
+              <p className="text-[11px] tracking-[0.2em] uppercase text-bh-orange mb-3">
+                Start your review
+              </p>
+              <h2 className="font-medium tracking-[-0.02em] text-[28px] md:text-[40px] leading-[1.05] text-bh-black">
+                Send us your quotes.
+                <br />
+                <span className="text-bh-graphite">We take it from here.</span>
+              </h2>
+              <p className="mt-4 text-[15px] leading-[1.55] text-bh-graphite max-w-sm">
+                A few details and your quote files. We confirm by phone or
+                email within one business day before any payment.
+              </p>
+              <ul className="mt-6 space-y-3 text-[14px] text-bh-graphite">
+                <li className="flex items-start gap-3">
+                  <span className="mt-[7px] inline-block w-1.5 h-1.5 flex-none bg-bh-orange" />
+                  <span>Up to 3 builder quotes per review</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="mt-[7px] inline-block w-1.5 h-1.5 flex-none bg-bh-orange" />
+                  <span>PDF, image, Word or Excel files welcome</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="mt-[7px] inline-block w-1.5 h-1.5 flex-none bg-bh-orange" />
+                  <span>Detailed report back within 5 business days</span>
+                </li>
+              </ul>
+            </div>
+            <div className="col-span-12 md:col-span-8">
+              <StartForm />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Assurance */}
       <section className="py-16 md:py-24 bg-bh-cloud">
         <div className="mx-auto max-w-[1480px] px-6 md:px-10 text-center">
@@ -280,7 +320,7 @@ export default function PeaceOfMindPage() {
             </div>
             <div className="col-span-12 md:col-span-4 flex flex-col gap-3">
               <a
-                href={REVIEW_MAILTO}
+                href={START_ANCHOR}
                 className="inline-flex items-center justify-center h-12 px-6 rounded-[8px] bg-bh-orange text-bh-paper text-[14px] tracking-[-0.005em] hover:bg-bh-orange-700 transition-colors"
               >
                 Start your review
