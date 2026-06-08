@@ -60,7 +60,14 @@ const steps = [
   "Detailed report",
 ];
 
-export default function PeaceOfMindPage() {
+export default async function PeaceOfMindPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const sp = await searchParams;
+  const paymentStatus =
+    sp.paid === "1" ? "paid" : sp.cancelled === "1" ? "cancelled" : undefined;
   return (
     <main className="relative bg-bh-white text-bh-black">
       <Nav />
@@ -286,7 +293,7 @@ export default function PeaceOfMindPage() {
               </ul>
             </div>
             <div className="col-span-12 md:col-span-8">
-              <StartForm />
+              <StartForm paymentStatus={paymentStatus} />
             </div>
           </div>
         </div>
