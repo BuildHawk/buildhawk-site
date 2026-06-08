@@ -252,7 +252,7 @@ export default function CommercialSupportPage() {
           >
             <div>
               <p className="text-[11px] tracking-[0.2em] uppercase text-bh-orange mb-2">
-                Buying, not building?
+                Build with confidence
               </p>
               <p className="text-[18px] md:text-[22px] font-medium tracking-[-0.015em] text-bh-black leading-[1.25]">
                 Peace of Mind: independent quote review for homeowners.
