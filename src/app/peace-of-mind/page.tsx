@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import Nav from "@/components/Nav";
 import StartForm from "./StartForm";
@@ -288,7 +289,9 @@ export default function PeaceOfMindPage() {
               </ul>
             </div>
             <div className="col-span-12 md:col-span-8">
-              <StartForm payFirst={payFirst} />
+              <Suspense>
+                <StartForm payFirst={payFirst} />
+              </Suspense>
             </div>
           </div>
         </div>

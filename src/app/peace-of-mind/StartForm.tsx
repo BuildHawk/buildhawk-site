@@ -9,6 +9,7 @@ import {
   type DragEvent,
   type FormEvent,
 } from "react";
+import { useSearchParams } from "next/navigation";
 
 const MAX_PER_FILE_BYTES = 25 * 1024 * 1024; // 25 MB
 const MAX_TOTAL_BYTES = 100 * 1024 * 1024; // 100 MB
@@ -46,6 +47,9 @@ export default function StartForm({ payFirst = false }: { payFirst?: boolean }) 
   const buildersId = useId();
   const notesId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const searchParams = useSearchParams();
+  const paymentStatus = searchParams.get("payment");
 
   const [files, setFiles] = useState<File[]>([]);
   const [quoteCount, setQuoteCount] = useState<"1" | "2" | "3">("1");
