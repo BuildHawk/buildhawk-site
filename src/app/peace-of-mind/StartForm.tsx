@@ -36,7 +36,7 @@ function extOf(name: string): string {
   return dot >= 0 ? name.slice(dot + 1).toLowerCase() : "";
 }
 
-type Status = "idle" | "submitting" | "success" | "error" | "fallback";
+type Status = "idle" | "submitting" | "success" | "error" | "fallback" | "redirecting";
 
 export default function StartForm({ payFirst = false }: { payFirst?: boolean }) {
   const nameId = useId();
