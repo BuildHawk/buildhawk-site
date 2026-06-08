@@ -160,7 +160,7 @@ export default function StartForm({ payFirst = false }: { payFirst?: boolean }) 
         method: "POST",
         body: fd,
       });
-      const data: { ok?: boolean; error?: string; code?: string } = await res
+      const data: { ok?: boolean; error?: string; code?: string; submissionId?: string } = await res
         .json()
         .catch(() => ({ ok: false, error: "Unexpected response from the server." }));
       if (!res.ok || !data.ok) {
