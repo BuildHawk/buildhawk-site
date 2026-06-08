@@ -36,9 +36,13 @@ function extOf(name: string): string {
   return dot >= 0 ? name.slice(dot + 1).toLowerCase() : "";
 }
 
-type Status = "idle" | "submitting" | "success" | "error";
+type Status = "idle" | "submitting" | "redirecting" | "success" | "error";
 
-export default function StartForm() {
+export default function StartForm({
+  paymentStatus,
+}: {
+  paymentStatus?: "paid" | "cancelled";
+}) {
   const nameId = useId();
   const emailId = useId();
   const phoneId = useId();
@@ -129,13 +133,38 @@ export default function StartForm() {
         method: "POST",
         body: fd,
       });
-      const data: { ok?: boolean; error?: string } = await res
+      const data: { ok?: boolean; error?: string; submissionId?: string } = await res
         .json()
         .catch(() => ({ ok: false, error: "Unexpected response from the server." }));
       if (!res.ok || !data.ok) {
         setStatus("error");
         setError(data.error || "Something went wrong. Please try again.");
         return;
+      }
+
+      // Lead + documents are captured. Move to online payment.
+      const email = String(fd.get("email") || "").trim();
+      const name = String(fd.get("name") || "").trim();
+      try {
+        const pay = await fetch("/api/peace-of-mind/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, name, ref: data.submissionId }),
+        });
+        if (pay.ok) {
+          const payData: { ok?: boolean; url?: string } = await pay
+            .json()
+            .catch(() => ({}));
+          if (payData.ok && payData.url) {
+            setStatus("redirecting");
+            window.location.href = payData.url;
+            return;
+          }
+        }
+        // 503 (Stripe not switched on yet) or any hiccup: the request is safely
+        // captured, so fall back to manual payment follow-up.
+      } catch (payErr) {
+        console.warn("[peace-of-mind] checkout unavailable, manual follow-up:", payErr);
       }
       setStatus("success");
     } catch (err) {
@@ -144,6 +173,47 @@ export default function StartForm() {
       setError("Network error. Please try again or email info@buildhawk.com.au.");
     }
   };
+
+  // Returning from Stripe Checkout.
+  if (paymentStatus === "paid") {
+    return (
+      <div className="rounded-[10px] border border-bh-orange/40 bg-bh-cloud p-8 md:p-10">
+        <span className="inline-block w-11 h-[3px] bg-bh-orange mb-5" />
+        <h3 className="font-medium tracking-[-0.02em] text-[24px] md:text-[30px] leading-[1.1] text-bh-black">
+          Payment received. You&rsquo;re all set.
+        </h3>
+        <p className="mt-4 max-w-xl text-[15px] md:text-[16px] leading-[1.55] text-bh-graphite">
+          Your $499 + GST payment is confirmed and your quotes are with our
+          team. We&rsquo;ll have your review back within 5 business days. Any
+          questions, email{" "}
+          <a href="mailto:info@buildhawk.com.au" className="text-bh-orange underline">
+            info@buildhawk.com.au
+          </a>
+          .
+        </p>
+      </div>
+    );
+  }
+
+  if (paymentStatus === "cancelled") {
+    return (
+      <div className="rounded-[10px] border border-bh-steel/60 bg-bh-cloud p-8 md:p-10">
+        <span className="inline-block w-11 h-[3px] bg-bh-orange mb-5" />
+        <h3 className="font-medium tracking-[-0.02em] text-[24px] md:text-[30px] leading-[1.1] text-bh-black">
+          Payment wasn&rsquo;t completed.
+        </h3>
+        <p className="mt-4 max-w-xl text-[15px] md:text-[16px] leading-[1.55] text-bh-graphite">
+          No charge was made. Your details and documents are already with us, so
+          there&rsquo;s nothing to resend. We&rsquo;ll email you a secure payment
+          link to finish, or you can reach us at{" "}
+          <a href="mailto:info@buildhawk.com.au" className="text-bh-orange underline">
+            info@buildhawk.com.au
+          </a>
+          .
+        </p>
+      </div>
+    );
+  }
 
   if (status === "success") {
     return (
@@ -399,14 +469,17 @@ export default function StartForm() {
       <div className="col-span-12 flex flex-col sm:flex-row sm:items-center gap-4 mt-2">
         <button
           type="submit"
-          disabled={status === "submitting"}
+          disabled={status === "submitting" || status === "redirecting"}
           className="inline-flex items-center justify-center h-12 px-6 rounded-[8px] bg-bh-orange text-bh-paper text-[14px] font-medium tracking-[-0.005em] hover:bg-bh-orange-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {status === "submitting" ? "Sending..." : "Send for review"}
+          {status === "submitting"
+            ? "Sending..."
+            : status === "redirecting"
+              ? "Taking you to payment..."
+              : "Send for review"}
         </button>
         <p className="text-[12px] text-bh-graphite">
-          No payment yet. We&rsquo;ll confirm the details by phone or email
-          before charging $499 + GST.
+          One flat fee of $499 + GST, paid securely by card. Up to 3 quotes.
         </p>
       </div>
     </form>
