@@ -36,9 +36,9 @@ function extOf(name: string): string {
   return dot >= 0 ? name.slice(dot + 1).toLowerCase() : "";
 }
 
-type Status = "idle" | "submitting" | "success" | "error";
+type Status = "idle" | "submitting" | "success" | "error" | "fallback";
 
-export default function StartForm() {
+export default function StartForm({ payFirst = false }: { payFirst?: boolean }) {
   const nameId = useId();
   const emailId = useId();
   const phoneId = useId();
@@ -111,7 +111,7 @@ export default function StartForm() {
     if (status === "submitting") return;
     setError("");
 
-    if (files.length === 0) {
+    if (!payFirst && files.length === 0) {
       setError("Attach at least one quote, plan or spec file.");
       return;
     }
@@ -119,9 +119,40 @@ export default function StartForm() {
     setStatus("submitting");
     try {
       const formEl = e.currentTarget;
+
+      // Pay-first mode: collect contact details only, redirect to Stripe.
+      // Files are uploaded on the /peace-of-mind/success page after payment.
+      if (payFirst) {
+        const fd = new FormData(formEl);
+        const body = {
+          name: String(fd.get("name") ?? ""),
+          email: String(fd.get("email") ?? ""),
+          phone: String(fd.get("phone") ?? ""),
+          address: String(fd.get("address") ?? ""),
+          quoteCount,
+          builders: String(fd.get("builders") ?? ""),
+          notes: String(fd.get("notes") ?? ""),
+          website: String(fd.get("website") ?? ""),
+        };
+        const res = await fetch("/api/peace-of-mind/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const data: { ok?: boolean; url?: string; error?: string } = await res
+          .json()
+          .catch(() => ({ ok: false, error: "Unexpected response from the server." }));
+        if (!res.ok || !data.ok || !data.url) {
+          setStatus("error");
+          setError(data.error || "Could not start checkout. Please try again.");
+          return;
+        }
+        window.location.assign(data.url);
+        return;
+      }
+
+      // No-pay mode: send everything (incl. files) to /start.
       const fd = new FormData(formEl);
-      // FormData picks up the native <input type=file>, but we've been managing
-      // state in React. Replace what the native input had with our curated list.
       fd.delete("files");
       for (const f of files) fd.append("files", f);
 
@@ -129,10 +160,17 @@ export default function StartForm() {
         method: "POST",
         body: fd,
       });
-      const data: { ok?: boolean; error?: string } = await res
+      const data: { ok?: boolean; error?: string; code?: string } = await res
         .json()
         .catch(() => ({ ok: false, error: "Unexpected response from the server." }));
       if (!res.ok || !data.ok) {
+        // 503 with the blob-not-configured hint: render the operational
+        // fallback UI rather than a generic error, so the customer can still
+        // reach us by email instead of staring at a dead end.
+        if (res.status === 503 && data.code === "blob_not_configured") {
+          setStatus("fallback");
+          return;
+        }
         setStatus("error");
         setError(data.error || "Something went wrong. Please try again.");
         return;
@@ -154,8 +192,9 @@ export default function StartForm() {
         </h3>
         <p className="mt-4 max-w-xl text-[15px] md:text-[16px] leading-[1.55] text-bh-graphite">
           We&rsquo;ll be in touch within one business day to confirm the
-          details, arrange payment, and get started on your review. If you
-          don&rsquo;t hear from us, check your spam folder or email{" "}
+          details, arrange payment, and get started on your review. Check your
+          inbox for a confirmation email. If you don&rsquo;t hear from us,
+          check your spam folder or email{" "}
           <a
             href="mailto:info@buildhawk.com.au"
             className="text-bh-orange underline"
@@ -168,8 +207,75 @@ export default function StartForm() {
     );
   }
 
+  if (status === "fallback") {
+    // Server returned 503 with the blob-not-configured hint. Render a soft
+    // fallback that lets the customer reach us by email instead of leaving
+    // them stuck on a dead form. The mailto pre-fills with a template so
+    // they don't have to start from scratch.
+    return (
+      <div className="rounded-[10px] border border-bh-orange/40 bg-bh-cloud p-8 md:p-10">
+        <span className="inline-block w-11 h-[3px] bg-bh-orange mb-5" />
+        <h3 className="font-medium tracking-[-0.02em] text-[24px] md:text-[30px] leading-[1.1] text-bh-black">
+          Uploads are briefly offline.
+        </h3>
+        <p className="mt-4 max-w-xl text-[15px] md:text-[16px] leading-[1.55] text-bh-graphite">
+          We can&rsquo;t accept files on the site right now while we finish
+          setup. The quickest way to get your review started is to email your
+          quotes directly. Attach your files (PDFs, photos, or Word) and
+          we&rsquo;ll reply within one business day.
+        </p>
+        <div className="mt-7 flex flex-wrap items-center gap-3">
+          <a
+            href={`mailto:info@buildhawk.com.au?subject=${encodeURIComponent(
+              "Peace of Mind quote review",
+            )}&body=${encodeURIComponent(
+              "Hi BuildHawk team,\n\nI'd like a Peace of Mind quote review. My builder quotes are attached.\n\nName:\nPhone:\nProject address:\nNumber of quotes:\nBuilders:\nNotes:\n\nThanks.",
+            )}`}
+            className="inline-flex items-center justify-center h-12 px-6 rounded-[8px] bg-bh-orange text-bh-paper text-[14px] font-medium tracking-[-0.005em] hover:bg-bh-orange-700 transition-colors"
+          >
+            Email us your quotes
+          </a>
+          <button
+            type="button"
+            onClick={() => {
+              setStatus("idle");
+              setError("");
+            }}
+            className="inline-flex items-center justify-center h-12 px-6 rounded-[8px] border border-bh-steel/60 text-bh-black text-[14px] tracking-[-0.005em] hover:border-bh-orange hover:text-bh-orange transition-colors"
+          >
+            Try the form again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} noValidate className="grid grid-cols-12 gap-4 md:gap-5">
+      {/* Honeypot: real humans never fill this. Hidden from layout, from screen
+          readers (aria-hidden + tabIndex=-1), and from autocomplete. If it
+          arrives populated the server silently 200s and drops the submission. */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          left: "-10000px",
+          top: "auto",
+          width: "1px",
+          height: "1px",
+          overflow: "hidden",
+        }}
+      >
+        <label htmlFor="bh-pom-website">Website</label>
+        <input
+          id="bh-pom-website"
+          type="text"
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
+
       {/* Name */}
       <div className="col-span-12 md:col-span-6">
         <label htmlFor={nameId} className="block text-[11px] tracking-[0.18em] uppercase text-bh-graphite mb-2">
@@ -294,8 +400,9 @@ export default function StartForm() {
         />
       </div>
 
-      {/* File upload */}
-      <div className="col-span-12">
+      {/* File upload - hidden in pay-first mode; files are uploaded after
+          payment on /peace-of-mind/success. */}
+      {!payFirst && <div className="col-span-12">
         <p className="block text-[11px] tracking-[0.18em] uppercase text-bh-graphite mb-2">
           Quotes, plans and specifications <span className="text-bh-orange">*</span>
         </p>
@@ -386,7 +493,7 @@ export default function StartForm() {
             {files.length} file{files.length === 1 ? "" : "s"}, {fmtBytes(totalBytes)} total
           </p>
         )}
-      </div>
+      </div>}
 
       {/* Error */}
       {error && (
@@ -402,11 +509,14 @@ export default function StartForm() {
           disabled={status === "submitting"}
           className="inline-flex items-center justify-center h-12 px-6 rounded-[8px] bg-bh-orange text-bh-paper text-[14px] font-medium tracking-[-0.005em] hover:bg-bh-orange-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {status === "submitting" ? "Sending..." : "Send for review"}
+          {status === "submitting"
+            ? payFirst ? "Redirecting..." : "Sending..."
+            : payFirst ? "Pay $499 + GST and continue" : "Send for review"}
         </button>
         <p className="text-[12px] text-bh-graphite">
-          No payment yet. We&rsquo;ll confirm the details by phone or email
-          before charging $499 + GST.
+          {payFirst
+            ? "You'll pay via Stripe, then upload your quotes on the next page."
+            : "No payment yet. We'll confirm the details by phone or email before charging $499 + GST."}
         </p>
       </div>
     </form>

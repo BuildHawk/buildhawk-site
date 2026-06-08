@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import Nav from "@/components/Nav";
 import StartForm from "./StartForm";
+import { isPeaceOfMindPayFirstEnabled } from "@/lib/peace-of-mind/stripe";
 
 export const metadata: Metadata = {
   title: "Peace of Mind · Independent quote review for homeowners · BuildHawk",
@@ -61,6 +62,7 @@ const steps = [
 ];
 
 export default function PeaceOfMindPage() {
+  const payFirst = isPeaceOfMindPayFirstEnabled();
   return (
     <main className="relative bg-bh-white text-bh-black">
       <Nav />
@@ -286,7 +288,7 @@ export default function PeaceOfMindPage() {
               </ul>
             </div>
             <div className="col-span-12 md:col-span-8">
-              <StartForm />
+              <StartForm payFirst={payFirst} />
             </div>
           </div>
         </div>
