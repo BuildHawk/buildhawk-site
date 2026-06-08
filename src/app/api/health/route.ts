@@ -24,15 +24,35 @@ export async function GET() {
     workbookField: Boolean(process.env.GHL_HBNH_PROJECT_DATA_FIELD_ID),
     anthropic: Boolean(process.env.ANTHROPIC_API_KEY),
   };
+  // Peace of Mind quote-review form (public /peace-of-mind page).
+  // blob is the only hard dependency. resend + ghl are nice-to-have so ops
+  // gets notified and CRM gets written. stripePrice activates the pay-first
+  // checkout flow when set; without it the form falls back to no-payment mode.
+  const peaceOfMind = {
+    blob: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
+    resend: Boolean(process.env.RESEND_API_KEY),
+    ghl: Boolean(process.env.GHL_API_KEY),
+    stripePrice: Boolean(process.env.PEACE_OF_MIND_PRICE_ID),
+  };
   const saasReady = Object.values(saas).every(Boolean);
-  const allGreen = saasReady && Object.values(optional).every(Boolean);
+  const peaceOfMindReady = peaceOfMind.blob;
+  const allGreen =
+    saasReady &&
+    peaceOfMindReady &&
+    Object.values(optional).every(Boolean) &&
+    Object.values(peaceOfMind).every(Boolean);
   return NextResponse.json(
     {
       ok: true,
-      status: allGreen ? "green" : saasReady ? "yellow" : "red",
+      status: allGreen
+        ? "green"
+        : saasReady && peaceOfMindReady
+          ? "yellow"
+          : "red",
       timestamp: new Date().toISOString(),
       saas,
       optional,
+      peaceOfMind,
     },
     {
       headers: {
