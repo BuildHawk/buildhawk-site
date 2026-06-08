@@ -86,3 +86,57 @@ export async function createOpportunity(input: GhlOpportunityInput): Promise<voi
     console.error("[ghl] createOpportunity error:", err);
   }
 }
+
+/**
+ * Attach a single file to a GHL contact via the Conversations / file-upload endpoint.
+ *
+ * GHL's REST API does not expose a documented "attach arbitrary file to contact"
+ * endpoint at the same maturity as contact / opportunity create. We try the
+ * Media Library upload (`/medias/upload-file`) first which works with the
+ * BuildHawk Private Integration scopes. If that's not available we log and
+ * continue - the file is already in Vercel Blob and emailed to ops, so a GHL
+ * attach miss is non-fatal.
+ *
+ * Returns true on success, false on any failure (caller should treat as warning,
+ * not error).
+ */
+export async function uploadFileToGhlMediaLibrary(input: {
+  fileName: string;
+  fileBytes: ArrayBuffer | Uint8Array;
+  contentType: string;
+}): Promise<boolean> {
+  const apiKey = process.env.GHL_API_KEY;
+  if (!apiKey) return false;
+
+  try {
+    const form = new FormData();
+    const blob = new Blob([new Uint8Array(input.fileBytes as ArrayBuffer)], {
+      type: input.contentType || "application/octet-stream",
+    });
+    form.append("file", blob, input.fileName);
+    form.append("hosted", "false");
+    form.append("name", input.fileName);
+    form.append("locationId", LOCATION_ID);
+
+    const res = await fetch(`${GHL_API_BASE}/medias/upload-file`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        Version: "2021-07-28",
+      },
+      body: form,
+    });
+    if (!res.ok) {
+      console.warn(
+        "[ghl] uploadFileToGhlMediaLibrary failed:",
+        res.status,
+        await res.text().catch(() => "<no body>"),
+      );
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.warn("[ghl] uploadFileToGhlMediaLibrary error:", err);
+    return false;
+  }
+}
