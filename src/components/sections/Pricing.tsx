@@ -77,7 +77,7 @@ const offerings: Offering[] = [
   },
   {
     id: "peace-of-mind",
-    eyebrow: "Buying, not building?",
+    eyebrow: "Build with confidence",
     title: "Peace of Mind",
     blurb:
       "Independent quote review for homeowners. Before you sign a building contract, we line your builder quotes up apples for apples and flag the gaps.",
