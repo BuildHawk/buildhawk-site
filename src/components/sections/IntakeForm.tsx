@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 
 type Status = "idle" | "submitting" | "success" | "error";
@@ -388,45 +388,71 @@ function Select({
   required?: boolean;
   className?: string;
 }) {
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState("");
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, []);
+
   return (
     <div className={fieldShellClasses(className)}>
-      <label htmlFor={name} className={labelClasses()}>
+      <label className={labelClasses()}>
         {label}
         {required && <span className="text-bh-orange ml-1">*</span>}
       </label>
-      <div className="relative">
-        <select
-          id={name}
-          name={name}
-          required={required}
-          defaultValue=""
-          className={`${inputClasses()} appearance-none pr-8`}
+      <input type="hidden" name={name} value={selected} required={required} />
+      <div className="relative" ref={ref}>
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          className="w-full flex items-center justify-between border-b border-bh-steel/60 py-2 text-[16px] tracking-[-0.005em] text-left focus:outline-none focus:border-bh-orange transition-colors"
         >
-          <option value="" disabled>
-            Select…
-          </option>
-          {options.map((o) => (
-            <option key={o} value={o}>
-              {o}
-            </option>
-          ))}
-        </select>
-        <svg
-          className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none"
-          width="14"
-          height="14"
-          viewBox="0 0 14 14"
-          fill="none"
-          aria-hidden
-        >
-          <path
-            d="M3 5l4 4 4-4"
-            stroke="#6e7180"
-            strokeWidth="1.4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+          <span className={selected ? "text-bh-black" : "text-bh-steel"}>
+            {selected || "Select…"}
+          </span>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+            aria-hidden
+            className={`flex-none transition-transform ${open ? "rotate-180" : ""}`}
+          >
+            <path
+              d="M3 5l4 4 4-4"
+              stroke="#6e7180"
+              strokeWidth="1.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+
+        {open && (
+          <ul className="absolute z-50 top-full left-0 right-0 mt-1 bg-bh-ink border border-bh-steel/30 shadow-lg overflow-hidden">
+            {options.map((o) => (
+              <li key={o}>
+                <button
+                  type="button"
+                  onClick={() => { setSelected(o); setOpen(false); }}
+                  className={`w-full text-left px-4 py-3 text-[15px] tracking-[-0.005em] hover:bg-bh-orange hover:text-white transition-colors ${
+                    selected === o ? "bg-bh-orange/20 text-bh-orange font-medium" : "text-bh-paper"
+                  }`}
+                >
+                  {o}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
