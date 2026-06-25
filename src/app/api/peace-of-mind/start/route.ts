@@ -1,11 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { put } from "@vercel/blob";
-import {
-  upsertContact,
-  createOpportunity,
-  uploadFileToGhlMediaLibrary,
-} from "@/lib/ghl";
 import { clientIp, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 import { signFileToken } from "@/lib/peace-of-mind/file-tokens";
 import {
@@ -320,11 +315,34 @@ export async function POST(req: Request) {
   // -------------------------------------------------------------------------
   const subject = `Peace of Mind: ${parsed.name} (${parsed.quoteCount} quote${parsed.quoteCount === "1" ? "" : "s"})`;
 
-  const [opsResult, ackResult, ghlResult] = await Promise.allSettled([
-    sendOpsEmail({ parsed, uploaded, subject, submissionId }),
-    sendCustomerAck({ parsed, uploaded, submissionId }),
-    pushToGhl({ parsed, uploaded }),
-  ]);
+  const [opsResult, ackResult, webhookResult] = await Promise.allSettled([
+  sendOpsEmail({ parsed, uploaded, subject, submissionId }),
+  sendCustomerAck({ parsed, uploaded, submissionId }),
+  fetch(
+    "https://buildhawk.app.n8n.cloud/webhook/buildhawk-peace-of-mind-save-ghl",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: parsed.name,
+        email: parsed.email,
+        phone: parsed.phone,
+        address: parsed.address,
+        quoteCount: parsed.quoteCount,
+        builders: parsed.builders,
+        notes: parsed.notes,
+
+        files: uploaded.map(file => ({
+          name: file.name,
+          url: file.signedUrl || file.url,
+          size: file.size,
+        })),
+      }),
+    }
+  ),
+]);
 
   if (opsResult.status === "rejected") {
     console.error("[peace-of-mind] ops email failed:", opsResult.reason);
@@ -332,9 +350,12 @@ export async function POST(req: Request) {
   if (ackResult.status === "rejected") {
     console.error("[peace-of-mind] customer ack email failed:", ackResult.reason);
   }
-  if (ghlResult.status === "rejected") {
-    console.error("[peace-of-mind] GHL push failed:", ghlResult.reason);
-  }
+  if (webhookResult.status === "rejected") {
+  console.error(
+    "[peace-of-mind] n8n webhook failed:",
+    webhookResult.reason,
+  );
+}
 
   return NextResponse.json({
     ok: true,
@@ -510,40 +531,5 @@ async function sendCustomerAck(args: {
   });
   if (error) {
     throw new Error(`Resend customer ack error: ${JSON.stringify(error)}`);
-  }
-}
-
-async function pushToGhl(args: {
-  parsed: ParsedForm;
-  uploaded: { name: string; contentType: string; bytes: ArrayBuffer }[];
-}): Promise<void> {
-  const { parsed, uploaded } = args;
-  const contactId = await upsertContact({
-    name: parsed.name,
-    email: parsed.email,
-    phone: parsed.phone,
-    source: "buildhawk-site-peace-of-mind",
-    tags: ["website-peace-of-mind", `quotes-${parsed.quoteCount}`],
-  });
-  if (!contactId) {
-    console.warn("[peace-of-mind] GHL upsertContact returned no id; skipping the rest.");
-    return;
-  }
-  await createOpportunity({
-    contactId,
-    name: `${parsed.name} - Peace of Mind (${parsed.quoteCount} quote${parsed.quoteCount === "1" ? "" : "s"})`,
-    source: "buildhawk-site-peace-of-mind",
-  });
-  for (const u of uploaded) {
-    const ok = await uploadFileToGhlMediaLibrary({
-      fileName: u.name,
-      fileBytes: u.bytes,
-      contentType: u.contentType,
-    });
-    if (!ok) {
-      console.warn(
-        `[peace-of-mind] GHL media upload skipped for "${u.name}" - file still in Blob and emailed to ops.`,
-      );
-    }
   }
 }
