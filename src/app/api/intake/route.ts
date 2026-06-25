@@ -47,7 +47,7 @@ export async function POST(req: Request) {
   // Send to n8n webhook and wait for its response
   try {
     const webhookRes = await fetch(
-      "https://primary-production-6722.up.railway.app/webhook/buildhawk-signup-save-ghl",
+      "https://buildhawk.app.n8n.cloud/webhook/buildhawk-signup-save-ghl",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
