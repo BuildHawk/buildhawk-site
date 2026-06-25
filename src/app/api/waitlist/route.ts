@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { upsertContact, createOpportunity } from "@/lib/ghl";
 
 import { clientIp, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
@@ -102,22 +101,36 @@ export async function POST(req: Request) {
     </div>
   </body></html>`;
 
-  // GHL: upsert contact + create opportunity for every valid waitlist signup
-  const contactId = await upsertContact({
-    name,
-    email,
-    company: payload.company,
-    source: "buildhawk-site-waitlist",
-    tags: ["website-waitlist", payload.audience ?? "unknown"].filter(Boolean),
-  });
-  if (contactId) {
-    await createOpportunity({
-      contactId,
-      name: `${name} · Hawktress waitlist`,
-      source: "buildhawk-site-waitlist",
-    });
-  }
+  // Send to n8n webhook and wait for its response
+try {
+  const webhookRes = await fetch(
+    "https://buildhawk.app.n8n.cloud/webhook/buildhawk-waitlist-save-ghl",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    }
+  );
 
+  if (!webhookRes.ok) {
+    console.error("[waitlist] webhook returned", webhookRes.status);
+
+    return NextResponse.json(
+      { error: "Could not submit right now." },
+      { status: 502 }
+    );
+  }
+} catch (err) {
+  console.error("[waitlist] webhook unreachable:", err);
+
+  return NextResponse.json(
+    { error: "Could not submit right now." },
+    { status: 502 }
+  );
+}
+  
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     // Without an API key configured, accept the signup but log only — keeps preview/dev usable.
