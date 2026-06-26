@@ -33,7 +33,18 @@ const valueRanges = [
 
 export default function IntakeForm() {
   const [status, setStatus] = useState<Status>("idle");
-  const [errorMsg, setErrorMsg] = useState<string>("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+const [phoneError, setPhoneError] = useState("");
+
+const isAustralianPhone = (phone: string) => {
+  const cleaned = phone.replace(/\s+/g, "");
+
+  return (
+    /^(\+61|0)[2378]\d{8}$/.test(cleaned) || // landline
+    /^(\+61|0)4\d{8}$/.test(cleaned)         // mobile
+  );
+};
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -54,6 +65,15 @@ export default function IntakeForm() {
       valueRange: data.get("valueRange"),
       message: data.get("message"),
     };
+
+    const phone = String(payload.phone || "").trim();
+    if (phone && !isAustralianPhone(phone)) {
+      setPhoneError("Please enter a valid Australian phone number.");
+      setStatus("idle");
+      return;
+    }
+    
+    setPhoneError("");
 
     try {
       const res = await fetch("/api/intake", {
@@ -167,12 +187,20 @@ export default function IntakeForm() {
                   required
                   autoComplete="email"
                 />
-                <Field
-                  name="phone"
-                  type="tel"
-                  label="Phone"
-                  autoComplete="tel"
-                />
+                <div>
+                  <Field
+                    name="phone"
+                    type="tel"
+                    label="Phone"
+                    autoComplete="tel"
+                  />
+                
+                  {phoneError && (
+                    <p className="px-6 pb-4 text-sm text-red-600">
+                      {phoneError}
+                    </p>
+                  )}
+                </div>
                 <Field
                   name="company"
                   label="Company"
@@ -367,8 +395,13 @@ function Field({
         name={name}
         type={type}
         required={required}
-        placeholder={placeholder}
+        placeholder={
+          type === "tel"
+            ? "+61 433 366 607"
+            : placeholder
+        }
         autoComplete={autoComplete}
+        inputMode={type === "tel" ? "tel" : undefined}
         className={inputClasses()}
       />
     </div>
