@@ -180,7 +180,8 @@ export default function StartForm({ payFirst = false }: { payFirst?: boolean }) 
       // No-pay mode: send everything (incl. files) to /start.
       fd.delete("files");
       for (const f of files) {
-      fd.append("files", f);
+        fd.append("files", f);
+      }
 
       const res = await fetch("/api/peace-of-mind/start", {
         method: "POST",
