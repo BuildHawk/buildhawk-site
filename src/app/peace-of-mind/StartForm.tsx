@@ -423,7 +423,8 @@ export default function StartForm({ payFirst = false }: { payFirst?: boolean }) 
             {phoneError}
           </p>
         )}
-
+      </div>
+      
       {/* Address */}
       <div className="col-span-12 md:col-span-6">
         <label htmlFor={addressId} className="block text-[11px] tracking-[0.18em] uppercase text-bh-graphite mb-2">
