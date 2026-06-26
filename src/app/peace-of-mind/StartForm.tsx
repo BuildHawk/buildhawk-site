@@ -39,6 +39,15 @@ function extOf(name: string): string {
 
 type Status = "idle" | "submitting" | "success" | "error" | "fallback" | "redirecting";
 
+function isAustralianPhone(phone: string): boolean {
+  const cleaned = phone.replace(/\s+/g, "");
+
+  return (
+    /^(\+61|0)4\d{8}$/.test(cleaned) ||
+    /^(\+61|0)[2378]\d{8}$/.test(cleaned)
+  );
+}
+
 export default function StartForm({ payFirst = false }: { payFirst?: boolean }) {
   const nameId = useId();
   const emailId = useId();
@@ -55,7 +64,8 @@ export default function StartForm({ payFirst = false }: { payFirst?: boolean }) 
   const [quoteCount, setQuoteCount] = useState<"1" | "2" | "3">("1");
   const [dragOver, setDragOver] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
 
   const totalBytes = files.reduce((sum, f) => sum + f.size, 0);
 
@@ -123,6 +133,18 @@ export default function StartForm({ payFirst = false }: { payFirst?: boolean }) 
     setStatus("submitting");
     try {
       const formEl = e.currentTarget;
+      const fd = new FormData(formEl);
+      const phone = String(fd.get("phone") ?? "").trim();
+      
+      if (!isAustralianPhone(phone)) {
+        setPhoneError(
+          "Please enter a valid Australian phone number (e.g. +61 433 366 607 or 0433 366 607)."
+        );
+        setStatus("idle");
+        return;
+      }
+      
+      setPhoneError("");
 
       // Pay-first mode: collect contact details only, redirect to Stripe.
       // Files are uploaded on the /peace-of-mind/success page after payment.
@@ -389,10 +411,18 @@ export default function StartForm({ payFirst = false }: { payFirst?: boolean }) 
           type="tel"
           required
           autoComplete="tel"
-          className="w-full h-12 px-4 rounded-[8px] border border-bh-steel/60 bg-bh-white text-[15px] text-bh-black placeholder:text-bh-graphite/60 focus:outline-none focus:border-bh-orange focus:ring-1 focus:ring-bh-orange"
           placeholder="04XX XXX XXX"
+          onChange={() => {
+            if (phoneError) setPhoneError("");
+          }}
+          className="w-full h-12 px-4 rounded-[8px] border border-bh-steel/60 bg-bh-white text-[15px] text-bh-black placeholder:text-bh-graphite/60 focus:outline-none focus:border-bh-orange focus:ring-1 focus:ring-bh-orange"
         />
-      </div>
+      
+        {phoneError && (
+          <p className="mt-2 text-sm text-red-600">
+            {phoneError}
+          </p>
+        )}
 
       {/* Address */}
       <div className="col-span-12 md:col-span-6">
