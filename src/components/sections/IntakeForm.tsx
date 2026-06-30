@@ -62,6 +62,13 @@ export default function IntakeForm() {
   const [errorMsg, setErrorMsg] = useState("");
   const [phoneError, setPhoneError] = useState("");
 
+  const [files, setFiles] = useState<File[]>([]);
+  const [dragOver, setDragOver] = useState(false);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const totalBytes = files.reduce((sum, file) => sum + file.size, 0);
+
   const isAustralianPhone = (phone: string) => {
     const cleaned = phone.replace(/\s+/g, "");
   
@@ -69,6 +76,77 @@ export default function IntakeForm() {
       /^(\+61|0)[2378]\d{8}$/.test(cleaned) || // landline
       /^(\+61|0)4\d{8}$/.test(cleaned)         // mobile
     );
+  };
+
+  const addFiles = (incoming: FileList | File[]) => {
+    setErrorMsg("");
+  
+    const next = [...files];
+  
+    for (const file of Array.from(incoming)) {
+      const ext = extOf(file.name);
+  
+      if (!ALLOWED_EXT.has(ext)) {
+        setErrorMsg(
+          `"${file.name}" is not a supported file type.`,
+        );
+        continue;
+      }
+  
+      if (file.size > MAX_PER_FILE_BYTES) {
+        setErrorMsg(
+          `"${file.name}" exceeds the 25 MB limit.`,
+        );
+        continue;
+      }
+  
+      if (
+        next.some(
+          (f) =>
+            f.name === file.name &&
+            f.size === file.size,
+        )
+      ) {
+        continue;
+      }
+  
+      next.push(file);
+    }
+  
+    const size = next.reduce((sum, f) => sum + f.size, 0);
+  
+    if (size > MAX_TOTAL_BYTES) {
+      setErrorMsg(
+        "Total upload exceeds 100 MB.",
+      );
+      return;
+    }
+  
+    setFiles(next);
+  };
+  
+  const handleFileInput = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    if (e.target.files) {
+      addFiles(e.target.files);
+      e.target.value = "";
+    }
+  };
+  
+  const handleDrop = (
+    e: React.DragEvent<HTMLDivElement>,
+  ) => {
+    e.preventDefault();
+    setDragOver(false);
+  
+    if (e.dataTransfer.files) {
+      addFiles(e.dataTransfer.files);
+    }
+  };
+  
+  const removeFile = (index: number) => {
+    setFiles(files.filter((_, i) => i !== index));
   };
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -90,6 +168,7 @@ export default function IntakeForm() {
       valueRange: data.get("valueRange"),
       message: data.get("message"),
     };
+    
 
     const phone = String(payload.phone || "").trim();
     if (phone && !isAustralianPhone(phone)) {
@@ -263,6 +342,73 @@ export default function IntakeForm() {
                   placeholder="Site address, current docs, what you need from us"
                   className="sm:col-span-2"
                 />
+
+                <div className="sm:col-span-2 bg-bh-white p-5 md:p-6">
+                  <label className={labelClasses()}>
+                    Project Documents
+                  </label>
+                
+                  <div
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setDragOver(true);
+                    }}
+                    onDragLeave={() => setDragOver(false)}
+                    onDrop={handleDrop}
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`mt-3 rounded-lg border-2 border-dashed p-8 text-center cursor-pointer transition ${
+                      dragOver
+                        ? "border-bh-orange bg-bh-orange/5"
+                        : "border-bh-steel/60 hover:border-bh-orange"
+                    }`}
+                  >
+                    <p className="text-[15px]">
+                      Click to upload or drag and drop
+                    </p>
+                
+                    <p className="mt-2 text-[12px] text-bh-graphite">
+                      PDF, DOC, DOCX, XLS, XLSX, JPG, JPEG, PNG
+                      <br />
+                      Maximum 25 MB per file, 100 MB total.
+                    </p>
+                
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      multiple
+                      accept={ACCEPT_ATTR}
+                      onChange={handleFileInput}
+                      className="hidden"
+                    />
+                  </div>
+                
+                  {files.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      {files.map((file, index) => (
+                        <div
+                          key={`${file.name}-${index}`}
+                          className="flex items-center justify-between rounded border border-bh-steel/60 px-3 py-2"
+                        >
+                          <span className="truncate text-sm">
+                            {file.name}
+                          </span>
+                
+                          <button
+                            type="button"
+                            onClick={() => removeFile(index)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                
+                      <p className="text-xs text-bh-graphite">
+                        {files.length} file(s) • {fmtBytes(totalBytes)}
+                      </p>
+                    </div>
+                  )}
+                </div>
 
                 <div className="sm:col-span-2 bg-bh-white p-6 md:p-7 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <p className="text-[12px] text-bh-graphite tracking-[-0.005em] max-w-md">
