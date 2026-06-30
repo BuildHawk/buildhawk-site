@@ -5,6 +5,32 @@ import Image from "next/image";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
+const MAX_PER_FILE_BYTES = 25 * 1024 * 1024; // 25 MB
+const MAX_TOTAL_BYTES = 100 * 1024 * 1024; // 100 MB
+const ACCEPT_ATTR =
+  ".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,application/pdf,image/jpeg,image/png,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+const ALLOWED_EXT = new Set([
+  "pdf",
+  "jpg",
+  "jpeg",
+  "png",
+  "doc",
+  "docx",
+  "xls",
+  "xlsx",
+]);
+
+function fmtBytes(n: number): string {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function extOf(name: string): string {
+  const dot = name.lastIndexOf(".");
+  return dot >= 0 ? name.slice(dot + 1).toLowerCase() : "";
+}
+
 const projectTypes = [
   "New residential build",
   "Knockdown rebuild",
@@ -34,17 +60,74 @@ const valueRanges = [
 export default function IntakeForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-const [phoneError, setPhoneError] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
+  const [dragOver, setDragOver] = useState(false);
 
-const isAustralianPhone = (phone: string) => {
-  const cleaned = phone.replace(/\s+/g, "");
+  const totalBytes = files.reduce((sum, f) => sum + f.size, 0);
 
-  return (
-    /^(\+61|0)[2378]\d{8}$/.test(cleaned) || // landline
-    /^(\+61|0)4\d{8}$/.test(cleaned)         // mobile
+  const addFiles = useCallback(
+    (incoming: FileList | File[]) => {
+      setErrorMsg("");
+      const next: File[] = [...files];
+      for (const f of Array.from(incoming)) {
+        const ext = extOf(f.name);
+        if (!ALLOWED_EXT.has(ext)) {
+          setErrorMsg(
+            `"${f.name}" is not a supported file type. PDF, JPG, PNG, DOC, DOCX, XLS or XLSX only.`,
+          );
+          continue;
+        }
+        if (f.size > MAX_PER_FILE_BYTES) {
+          setErrorMsg(`"${f.name}" is over the 25 MB per-file limit.`);
+          continue;
+        }
+        // Skip exact duplicates (same name + size)
+        if (next.some((x) => x.name === f.name && x.size === f.size)) continue;
+        next.push(f);
+      }
+      const newTotal = next.reduce((sum, f) => sum + f.size, 0);
+      if (newTotal > MAX_TOTAL_BYTES) {
+        setErrorMsg("Total upload is over the 100 MB limit. Remove a file and try again.");
+        return;
+      }
+      setFiles(next);
+    },
+    [files],
   );
-};
+
+  const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length) {
+      addFiles(e.target.files);
+      // reset so the same file can be re-picked after removal
+      e.target.value = "";
+    }
+  };
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOver(false);
+    if (e.dataTransfer?.files && e.dataTransfer.files.length) {
+      addFiles(e.dataTransfer.files);
+    }
+  };
+
+  const removeFile = (idx: number) => {
+    setFiles(files.filter((_, i) => i !== idx));
+    setErrorMsg("");
+  };
+
+  const isAustralianPhone = (phone: string) => {
+    const cleaned = phone.replace(/\s+/g, "");
+  
+    return (
+      /^(\+61|0)[2378]\d{8}$/.test(cleaned) || // landline
+      /^(\+61|0)4\d{8}$/.test(cleaned)         // mobile
+    );
+  };
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -239,6 +322,95 @@ const isAustralianPhone = (phone: string) => {
                   className="sm:col-span-2"
                 />
 
+                <div
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragOver(true);
+                  }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      fileInputRef.current?.click();
+                    }
+                  }}
+                  className={`flex flex-col items-center justify-center text-center cursor-pointer rounded-[10px] border-2 border-dashed px-6 py-10 transition-colors ${
+                    dragOver
+                      ? "border-bh-orange bg-bh-orange/5"
+                      : "border-bh-steel/60 bg-bh-cloud/40 hover:border-bh-orange hover:bg-bh-orange/5"
+                  }`}
+                >
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden className="mb-3 text-bh-orange">
+                    <path
+                      d="M12 16V4m0 0l-4 4m4-4l4 4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <p className="text-[15px] text-bh-black">
+                    Drop your files here, or{" "}
+                    <span className="text-bh-orange underline underline-offset-2">browse</span>
+                  </p>
+                  <p className="mt-1 text-[12px] text-bh-graphite">
+                    PDF, JPG, PNG, DOC, DOCX, XLS, XLSX. Up to 25 MB per file, 100 MB total.
+                  </p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    name="files"
+                    multiple
+                    accept={ACCEPT_ATTR}
+                    onChange={handleFileInput}
+                    className="sr-only"
+                  />
+                </div>
+        
+                {files.length > 0 && (
+                  <ul className="mt-4 divide-y divide-bh-steel/40 border border-bh-steel/40 rounded-[8px] bg-bh-white">
+                    {files.map((f, i) => (
+                      <li
+                        key={`${f.name}-${i}`}
+                        className="flex items-center gap-3 px-4 py-3"
+                      >
+                        <span className="flex-1 min-w-0 truncate text-[14px] text-bh-black">
+                          {f.name}
+                        </span>
+                        <span className="text-[12px] text-bh-graphite tabular-nums">
+                          {fmtBytes(f.size)}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeFile(i)}
+                          aria-label={`Remove ${f.name}`}
+                          className="ml-2 inline-flex items-center justify-center w-7 h-7 rounded-full text-bh-graphite hover:text-bh-orange hover:bg-bh-orange/10"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+                            <path
+                              d="M3 3l8 8M11 3l-8 8"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+        
+                {files.length > 0 && (
+                  <p className="mt-2 text-[12px] text-bh-graphite tabular-nums">
+                    {files.length} file{files.length === 1 ? "" : "s"}, {fmtBytes(totalBytes)} total
+                  </p>
+                )}
+              </div>
+
                 <div className="sm:col-span-2 bg-bh-white p-6 md:p-7 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <p className="text-[12px] text-bh-graphite tracking-[-0.005em] max-w-md">
                     By submitting you agree we can contact you about your
@@ -302,6 +474,8 @@ const audienceOptions = [
   { id: "trade", label: "Trade", note: "Category benchmarks AU + NZ" },
   { id: "supplier", label: "Supplier", note: "Platform listing + recommendations" },
   { id: "other", label: "General", note: "Consulting or another enquiry" },
+  { id: "homeowner", label: "Homeowner", note: "Project support or builder matching" },
+  { id: "owner-builder", label: "Owner Builder", note: "Owner-builder project support" },
 ] as const;
 
 function AudienceSelector() {
