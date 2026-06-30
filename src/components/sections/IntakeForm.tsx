@@ -339,7 +339,7 @@ function AudienceSelector() {
         I am a <span className="text-bh-orange">*</span>
       </p>
       <input type="hidden" name="audience" value={selected} />
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
         {audienceOptions.map((o) => {
           const active = selected === o.id;
           return (
