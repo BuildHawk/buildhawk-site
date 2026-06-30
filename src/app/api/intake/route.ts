@@ -37,7 +37,11 @@ export async function POST(req: Request) {
     message: String(formData.get("message") || ""),
   };
 
-  const uploadedFiles: string[] = [];
+  const uploadedFiles: {
+    name: string;
+    url: string;
+    size: number;
+  }[] = [];
 
   const files = formData.getAll("files") as File[];
 
@@ -54,7 +58,11 @@ export async function POST(req: Request) {
       }
     );
   
-    uploadedFiles.push(blob.url);
+    uploadedFiles.push({
+      name: file.name,
+      url: blob.url,
+      size: file.size,
+    });
   }
 
   // Minimal validation
