@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { put } from "@vercel/blob";
 import { clientIp, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -21,11 +22,37 @@ export async function POST(req: Request) {
   const _rl = rateLimit(clientIp(req), { bucket: "intake", max: 10 });
   if (!_rl.ok) return tooManyRequests(_rl.retryAfter);
 
-  let body: IntakePayload;
-  try {
-    body = (await req.json()) as IntakePayload;
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  const formData = await req.formData();
+
+  const body: IntakePayload = {
+    audience: String(formData.get("audience") || ""),
+    name: String(formData.get("name") || ""),
+    email: String(formData.get("email") || ""),
+    phone: String(formData.get("phone") || ""),
+    company: String(formData.get("company") || ""),
+    role: String(formData.get("role") || ""),
+    projectType: String(formData.get("projectType") || ""),
+    stage: String(formData.get("stage") || ""),
+    valueRange: String(formData.get("valueRange") || ""),
+    message: String(formData.get("message") || ""),
+  };
+
+  const uploadedFiles: string[] = [];
+
+  const files = formData.getAll("files") as File[];
+  
+  for (const file of files) {
+    if (file.size === 0) continue;
+  
+    const blob = await put(
+      `intake/${Date.now()}-${file.name}`,
+      file,
+      {
+        access: "public",
+      }
+    );
+  
+    uploadedFiles.push(blob.url);
   }
 
   // Minimal validation
@@ -51,7 +78,10 @@ export async function POST(req: Request) {
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+          ...body,
+          documents: uploadedFiles,
+        }),
       }
     );
     if (!webhookRes.ok) {
