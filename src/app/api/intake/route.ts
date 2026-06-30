@@ -40,6 +40,8 @@ export async function POST(req: Request) {
   const uploadedFiles: string[] = [];
 
   const files = formData.getAll("files") as File[];
+
+  console.log("Files received:", files.length);
   
   for (const file of files) {
     if (file.size === 0) continue;
