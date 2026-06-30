@@ -180,18 +180,27 @@ export default function IntakeForm() {
     setPhoneError("");
 
     try {
+      const submitData = new FormData(form);
+    
+      files.forEach((file) => {
+        submitData.append("files", file);
+      });
+    
       const res = await fetch("/api/intake", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: submitData,
       });
+    
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
         throw new Error(j.error || `Submission failed (${res.status})`);
       }
+    
       setStatus("success");
       form.reset();
+      setFiles([]);
     } catch (err) {
+      
       const msg = err instanceof Error ? err.message : "Something went wrong";
       setErrorMsg(msg);
       setStatus("error");
