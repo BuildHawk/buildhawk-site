@@ -48,6 +48,12 @@ export async function POST(req: Request) {
   console.log("Files received:", files.length);
   
   for (const file of files) {
+    console.log("Uploading file:", {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+    });
+  
     if (file.size === 0) continue;
   
     const blob = await put(
@@ -57,6 +63,8 @@ export async function POST(req: Request) {
         access: "public",
       }
     );
+  
+    console.log("Blob uploaded:", blob.url);
   
     uploadedFiles.push({
       name: file.name,
