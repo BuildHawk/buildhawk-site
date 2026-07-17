@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { put } from "@vercel/blob";
 import { clientIp, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -17,61 +16,20 @@ type IntakePayload = {
   message?: string;
 };
 
-
 export async function POST(req: Request) {
   const _rl = rateLimit(clientIp(req), { bucket: "intake", max: 10 });
   if (!_rl.ok) return tooManyRequests(_rl.retryAfter);
 
-  const formData = await req.formData();
-
-  const body: IntakePayload = {
-    audience: String(formData.get("audience") || ""),
-    name: String(formData.get("name") || ""),
-    email: String(formData.get("email") || ""),
-    phone: String(formData.get("phone") || ""),
-    company: String(formData.get("company") || ""),
-    role: String(formData.get("role") || ""),
-    projectType: String(formData.get("projectType") || ""),
-    stage: String(formData.get("stage") || ""),
-    valueRange: String(formData.get("valueRange") || ""),
-    message: String(formData.get("message") || ""),
-  };
-
-  const uploadedFiles: {
-    name: string;
-    url: string;
-    size: number;
-  }[] = [];
-
-  const files = formData.getAll("files") as File[];
-
-  console.log("Files received:", files.length);
-  
-  for (const file of files) {
-    console.log("Uploading file:", {
-      name: file.name,
-      size: file.size,
-      type: file.type,
-    });
-  
-    if (file.size === 0) continue;
-  
-    const blob = await put(
-      `intake/${Date.now()}-${file.name}`,
-      file,
-      {
-        access: "public",
-      }
-    );
-  
-    console.log("Blob uploaded:", blob.url);
-  
-    uploadedFiles.push({
-      name: file.name,
-      url: blob.url,
-      size: file.size,
-    });
-  }
+  const {
+    documents = [],
+      ...body
+    }: IntakePayload & {
+      documents?: {
+        name: string;
+        url: string;
+        size: number;
+      }[];
+    } = await req.json();
 
   // Minimal validation
   const name = (body.name || "").trim();
@@ -98,7 +56,7 @@ export async function POST(req: Request) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...body,
-          documents: uploadedFiles,
+          documents
         }),
       }
     );
