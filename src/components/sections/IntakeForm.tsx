@@ -154,9 +154,10 @@ export default function IntakeForm() {
     e.preventDefault();
     setStatus("submitting");
     setErrorMsg("");
-
+  
     const form = e.currentTarget;
     const data = new FormData(form);
+  
     const payload = {
       audience: data.get("audience"),
       name: data.get("name"),
@@ -169,59 +170,58 @@ export default function IntakeForm() {
       valueRange: data.get("valueRange"),
       message: data.get("message"),
     };
-    
-
+  
     const phone = String(payload.phone || "").trim();
     if (phone && !isAustralianPhone(phone)) {
       setPhoneError("Please enter a valid Australian phone number.");
       setStatus("idle");
       return;
     }
-    
+  
     setPhoneError("");
-
-    const documents: {
-      name: string;
-      url: string;
-      size: number;
-    }[] = [];
-    
-    for (const file of files) {
-      const blob = await upload(file.name, file, {
-        access: "public",
-        handleUploadUrl: "/api/blob/upload",
-      });
-    
-      documents.push({
-        name: file.name,
-        url: blob.url,
-        size: file.size,
-      });
-    }
-
+  
     try {
-      const submitData = new FormData(form);
-    
-      files.forEach((file) => {
-        submitData.append("files", file);
-      });
-    
+      const documents: {
+        name: string;
+        url: string;
+        size: number;
+      }[] = [];
+  
+      for (const file of files) {
+        const blob = await upload(file.name, file, {
+          access: "public",
+          handleUploadUrl: "/api/blob/upload",
+        });
+  
+        documents.push({
+          name: file.name,
+          url: blob.url,
+          size: file.size,
+        });
+      }
+  
       const res = await fetch("/api/intake", {
         method: "POST",
-        body: submitData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...payload,
+          documents,
+        }),
       });
-    
+  
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
         throw new Error(j.error || `Submission failed (${res.status})`);
       }
-    
+  
       setStatus("success");
       form.reset();
       setFiles([]);
     } catch (err) {
-      
-      const msg = err instanceof Error ? err.message : "Something went wrong";
+      const msg =
+        err instanceof Error ? err.message : "Something went wrong";
       setErrorMsg(msg);
       setStatus("error");
     }
