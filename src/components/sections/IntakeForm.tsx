@@ -180,6 +180,25 @@ export default function IntakeForm() {
     
     setPhoneError("");
 
+    const documents: {
+      name: string;
+      url: string;
+      size: number;
+    }[] = [];
+    
+    for (const file of files) {
+      const blob = await upload(file.name, file, {
+        access: "public",
+        handleUploadUrl: "/api/blob/upload",
+      });
+    
+      documents.push({
+        name: file.name,
+        url: blob.url,
+        size: file.size,
+      });
+    }
+
     try {
       const submitData = new FormData(form);
     
