@@ -1,5 +1,6 @@
 "use client";
 
+import { upload } from "@vercel/blob/client";
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 
