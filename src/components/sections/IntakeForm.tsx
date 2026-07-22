@@ -39,6 +39,7 @@ const projectTypes = [
   "Contract Administration Support",
   "Execution Support",
   "Alliance",
+  "Growth Engine",
 ] as const;
 
 const stages = [
@@ -496,6 +497,7 @@ function fieldShellClasses(extra = "") {
 }
 
 const audienceOptions = [
+  { id: "architect-designer", label: "Architect/ Designer", note: "Budget estimates + estimating" },
   { id: "builder", label: "Builder", note: "Estimating · CA · margin tracking" },
   { id: "trade", label: "Trade", note: "Category benchmarks AU + NZ" },
   { id: "supplier", label: "Supplier", note: "Platform listing + recommendations" },
