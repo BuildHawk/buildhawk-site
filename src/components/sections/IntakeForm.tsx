@@ -33,19 +33,17 @@ function extOf(name: string): string {
 }
 
 const projectTypes = [
-  "New residential build",
-  "Knockdown rebuild",
-  "Extension / renovation",
-  "Multi-residential / townhouses",
-  "Owner-builder",
-  "Other",
+  "Budget Estimate",
+  "Preliminary Estimate",
+  "Full Estimate",
+  "Contract Administration Support",
+  "Execution Support",
+  "Alliance",
 ] as const;
 
 const stages = [
-  "Pre-tender / planning",
-  "Active tender",
-  "Mid-build",
-  "Pre-construction handover",
+  "Pre-Construction Planning",
+  "Active Estimate",
   "Just exploring",
 ] as const;
 
@@ -348,7 +346,7 @@ export default function IntakeForm() {
 
                 <Select
                   name="projectType"
-                  label="Project type"
+                  label="Service type"
                   options={projectTypes as unknown as string[]}
                   required
                 />
