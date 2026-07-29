@@ -12,7 +12,6 @@ import Image from "next/image";
 const ARCH = `graph TB
   classDef src fill:#fff,stroke:#94A3B8,stroke-width:1.5px,color:#0F172A
   classDef ingest fill:#FFF8EB,stroke:#E89A1A,stroke-width:1.5px,color:#9A2A06
-  classDef agent fill:#F5F3FF,stroke:#7C3AED,stroke-width:1.5px,color:#4C1D95
   classDef core fill:#0B1220,stroke:#0B1220,color:#fff
   classDef engine fill:#fff,stroke:#DE5123,stroke-width:1.5px,color:#9A2A06
   classDef surface fill:#fff,stroke:#0B1220,stroke-width:2px,color:#0B1220
@@ -29,36 +28,20 @@ const ARCH = `graph TB
   subgraph Ingest[" Ingestion + ETL "]
     direction TB
     PULL["Connectors<br/>Buildxact 15min + webhook<br/>Xero hourly + webhook"]:::ingest
-    DOCQ["Document queue<br/>email · PDF · call transcripts"]:::ingest
+    NORM["Normaliser<br/>map to 33 trade categories<br/>map to 24 AU/NZ regions"]:::ingest
     AUDWR["Audit log writer<br/>append-only · hash-chained"]:::ingest
-  end
-
-  subgraph AgentsW[" Agent layer · write path "]
-    direction TB
-    INTAKE["Intake agent<br/>extract supplier · lines · scope · exclusions"]:::agent
-    NORMA["Normaliser agent<br/>33 trades · 24 regions · confidence score"]:::agent
-    SCOPEA["Scope check agent<br/>vs historical comparables · gap warnings"]:::agent
   end
 
   subgraph Core[" Hawktress core · Postgres · ap-southeast-2 "]
     PROJ[("Project tables<br/>tenant-scoped<br/>quotes · actuals · variations")]:::core
-    VEC[("Vector store<br/>tenant-namespaced embeddings")]:::core
     AGG[("Aggregated views<br/>region × trade × type<br/>min sample 5 enforced")]:::core
     AUDIT[("Immutable audit log<br/>7yr retention")]:::core
   end
 
-  subgraph Engines[" Processing engines · deterministic "]
+  subgraph Engines[" Processing engines "]
     BENCH["Benchmark engine<br/>rolling 12mo volume-weighted avg<br/>5% threshold · confidence score"]:::engine
     FLAGS["Margin + erosion engine<br/>real-time triggers"]:::engine
     PLACE["Procurement placement<br/>tier · region · performance"]:::engine
-  end
-
-  subgraph AgentsR[" Agent layer · read path "]
-    direction TB
-    EROS["Erosion explainer<br/>drafts the why for each flag"]:::agent
-    COPI["Console copilot<br/>NL query · retrieval"]:::agent
-    RANK["Procurement ranker<br/>ranked supplier list with rationale"]:::agent
-    ANON["Anonymisation guard<br/>re-identification risk check"]:::agent
   end
 
   subgraph Surfaces[" Director-facing surfaces "]
@@ -73,91 +56,58 @@ const ARCH = `graph TB
     AUTH["Auth · multi-tenant<br/>MFA enforced"]:::cross
     BILL["Stripe AU<br/>subscription tiers"]:::cross
     SPINE["GHL + Power Automate<br/>sales · onboarding · billing events"]:::cross
-    GOV["Agent governance<br/>prompt registry · evals · kill switch"]:::cross
   end
 
   DX --> XR
   BX --> PULL
   XR --> PULL
-  WB --> DOCQ
-  PULL --> PROJ
-  DOCQ --> INTAKE
-  INTAKE --> NORMA
-  NORMA --> SCOPEA
-  SCOPEA --> PROJ
+  WB --> NORM
+  PULL --> NORM
+  NORM --> PROJ
   PROJ -. hourly recompute .-> AGG
-  PROJ --> VEC
   PROJ --> AUDWR
   AUDWR --> AUDIT
   AGG --> BENCH
   PROJ --> FLAGS
   AGG --> PLACE
-  FLAGS --> EROS
-  AGG --> COPI
-  VEC --> COPI
-  PLACE --> RANK
-  AGG --> ANON
-  EROS --> CC
-  COPI --> CC
   BENCH --> CC
   BENCH --> SUB
   BENCH --> ALL
-  RANK --> ALL
+  FLAGS --> CC
   PLACE --> ALL
-  ANON --> SUB
   PROJ -. tenant-scoped reads .-> CC
   AUTH -. gate .-> Surfaces
   SPINE -. provisioning .-> AUTH
-  BILL -. entitlement .-> AUTH
-  GOV -. governs .-> AgentsW
-  GOV -. governs .-> AgentsR
-  AUDWR -. logs every agent_run .-> AgentsW
-  AUDWR -. logs every agent_run .-> AgentsR`;
+  BILL -. entitlement .-> AUTH`;
 
 const LIFECYCLE = `sequenceDiagram
   autonumber
-  actor Inbound as Inbound channel
-  participant DocQ as Document queue
-  participant Intake as Intake agent
-  participant Norma as Normaliser agent
-  participant Scope as Scope check agent
   actor E as Estimator
+  participant W as RFQ Workbench
+  participant N as Normaliser + Anonymiser
   participant H as Hawktress core
   participant L as Audit log
   participant B as Benchmark engine
-  participant F as Margin + erosion engine
-  participant Eros as Erosion explainer
+  participant F as Flag engine
   actor D as Director
 
-  Inbound->>DocQ: Email, PDF, or call transcript
-  DocQ->>Intake: Process document
-  Intake->>Intake: Extract supplier · lines · scope · exclusions
-  Intake->>L: Append agent_run event
-  Intake->>Norma: Draft quote
-  Norma->>Norma: Tag region · trade · type<br/>(confidence score)
-  Norma->>L: Append agent_run event
-  Norma->>Scope: Tagged draft
-  Scope->>Scope: Compare to historical comparables
-  Scope->>L: Append agent_run event
-  Scope->>E: Draft + warnings in RFQ Workbench
-  E->>E: Review · edit · sign off
-  E->>H: Commit quote (tenant-scoped)
+  E->>W: Enter quote<br/>(supplier, $42,800, scope)
+  W->>W: Estimator sign-off
+  W->>N: Quote committed
+  N->>N: Tag region · trade · project type
+  N->>H: Write tagged quote (tenant-scoped)
   H->>L: Append write event (hash-chained)
   H->>B: Trigger recompute<br/>(region × trade × type)
   B->>B: Update rolling 12mo avg<br/>recalculate confidence score
   B->>H: Persist new benchmark
   B->>F: Quote 7.3% above benchmark
-  F->>Eros: Request rationale
-  Eros->>Eros: Draft why<br/>(regional trend · supplier history · scope deltas)
-  Eros->>L: Append agent_run event
-  Eros->>D: Flag + pre-drafted rationale in Cost Plan Console<br/>(SLA: under 15 minutes)
-  D->>H: Request CA review (rationale editable, attached)
-  H->>L: Append decision event`;
+  F->>D: Surface flag in Cost Plan Console<br/>(SLA: under 15 minutes)
+  D->>W: Director clicks "Request CA review"
+  W->>L: Append decision event`;
 
 const TENANT = `graph LR
   classDef tenant fill:#fff,stroke:#0B1220,stroke-width:1.5px,color:#0B1220
   classDef raw fill:#FFF8EB,stroke:#E89A1A,color:#9A2A06
-  classDef agent fill:#F5F3FF,stroke:#7C3AED,stroke-width:1.5px,color:#4C1D95
   classDef agg fill:#0B1220,stroke:#0B1220,color:#fff
   classDef pub fill:#fff,stroke:#DE5123,stroke-width:2px,color:#9A2A06
   classDef rule fill:#FEE2E2,stroke:#F87171,color:#991B1B,stroke-dasharray:4 3
@@ -165,21 +115,17 @@ const TENANT = `graph LR
   subgraph TA[" Builder A (Homes by NH) "]
     A1["Quote $42,800<br/>Northcote KDR · Framing"]:::raw
     A2["Director view A<br/>margin · cashflow · variations"]:::tenant
-    APA["Console copilot<br/>tenant-scoped"]:::agent
   end
   subgraph TB[" Builder B (anonymised) "]
     B1["Quote $39,200<br/>Project · Framing"]:::raw
     B2["Director view B"]:::tenant
-    APB["Console copilot<br/>tenant-scoped"]:::agent
   end
   subgraph TC[" Builder C (anonymised) "]
     C1["Quote $41,600<br/>Project · Framing"]:::raw
     C2["Director view C"]:::tenant
-    APC["Console copilot<br/>tenant-scoped"]:::agent
   end
 
   RULE["<b>Anonymisation rules</b><br/>strip project_id + builder_id<br/>require >=5 distinct projects<br/>aggregate at query layer"]:::rule
-  GUARD["<b>Anonymisation guard agent</b><br/>re-identification risk score<br/>blocks release on risk"]:::agent
 
   AGG{{"Aggregation layer"}}:::agg
   PUB["Regional benchmark · Framing · NSW<br/>$41,200 avg · n=18 · conf 92%"]:::pub
@@ -188,16 +134,11 @@ const TENANT = `graph LR
   B1 -. write .-> AGG
   C1 -. write .-> AGG
   RULE -. enforces .-> AGG
-  AGG --> GUARD
-  GUARD --> PUB
+  AGG --> PUB
 
   A1 ==> A2
   B1 ==> B2
   C1 ==> C2
-
-  APA -. respects boundary .-> A2
-  APB -. respects boundary .-> B2
-  APC -. respects boundary .-> C2
 
   PUB -. shared anonymised benchmark .-> A2
   PUB -. shared anonymised benchmark .-> B2
@@ -395,9 +336,7 @@ export default function Architecture() {
           <p className="mt-3 text-slate-600 max-w-3xl">
             Three views. The system as a whole, the lifecycle of a single quote, and the
             anonymisation boundary that protects every builder while letting the network sharpen
-            the benchmark for everyone. An agent layer wraps the deterministic core (it never
-            replaces it) so estimators stop retyping quotes and directors get a pre-drafted
-            rationale on every flag.
+            the benchmark for everyone.
           </p>
           <div className="mt-5 flex flex-wrap gap-3 text-xs">
             <Stat label="Trade categories" value="33" />
@@ -406,8 +345,6 @@ export default function Architecture() {
             <Stat label="Min benchmark sample" value="5 projects" />
             <Stat label="Hosting" value="AWS Sydney" />
             <Stat label="Audit retention" value="7 years" />
-            <Stat label="Write-path agents" value="3" />
-            <Stat label="Read-path agents" value="4" />
           </div>
         </section>
 
@@ -415,7 +352,7 @@ export default function Architecture() {
           <SectionTitle
             num="01 · Architecture"
             title="System architecture"
-            sub="External sources flow in through the ingestion layer, get pre-processed by a write-path agent layer (Intake, Normaliser, Scope check), and land in the Hawktress core. Three deterministic engines drive every director-facing surface, with a read-path agent layer (Erosion explainer, Console copilot, Procurement ranker, Anonymisation guard) wrapping them with reasoning and narrative. Cross-cutting concerns gate access and govern every agent call."
+            sub="External sources flow in through the ingestion layer, land in the Hawktress core, and feed three processing engines that drive every director-facing surface. Cross-cutting concerns sit alongside, gating access at every step."
           />
           <Diagram source={ARCH} />
         </section>
@@ -424,7 +361,7 @@ export default function Architecture() {
           <SectionTitle
             num="02 · Lifecycle"
             title="From quote to flagged tile"
-            sub="A trade quote arrives by email, PDF, or call transcript. The Intake, Normaliser, and Scope check agents pre-process it before the estimator signs off, and the Erosion explainer drafts the rationale that lands next to the flag in the director's view. End to end in under 15 minutes. Every agent run is hash-chained into the immutable audit log alongside the deterministic write events."
+            sub="A trade quote enters the workbench and ends up as a margin erosion flag in the director's view in under 15 minutes. Every step writes an entry to the immutable audit log."
           />
           <Diagram source={LIFECYCLE} />
         </section>
@@ -433,7 +370,7 @@ export default function Architecture() {
           <SectionTitle
             num="03 · Boundary"
             title="Tenant isolation + anonymisation"
-            sub="The commercial moat. Each builder owns their raw data. Aggregated benchmarks are stripped of identifiers and only released when the sample reaches the threshold. The Anonymisation guard agent runs as a final check on every aggregated payload, blocking release when the re-identification risk score exceeds policy. Per-tenant Console copilots respect the same boundary at the agent layer."
+            sub="The commercial moat. Each builder owns their raw data. Aggregated benchmarks are stripped of identifiers and only released when the sample reaches the threshold. This is what stops Hawktress from being a generic data product anyone can audit."
           />
           <Diagram source={TENANT} />
         </section>
