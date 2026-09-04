@@ -167,6 +167,7 @@ export default function IntakeForm() {
       projectType: data.get("projectType"),
       stage: data.get("stage"),
       valueRange: data.get("valueRange"),
+      projectAddress: data.get("projectAddress"),
       message: data.get("message"),
     };
   
@@ -365,9 +366,16 @@ export default function IntakeForm() {
                 />
 
                 <Textarea
+                  name="projectAddress"
+                  label="Project Address"
+                  placeholder="Project/Site Address"
+                  className="sm:col-span-2"
+                />
+                
+                <Textarea
                   name="message"
                   label="Project notes"
-                  placeholder="Site address, current docs, what you need from us"
+                  placeholder="current docs, what you need from us"
                   className="sm:col-span-2"
                 />
 
