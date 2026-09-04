@@ -364,10 +364,17 @@ export default function IntakeForm() {
                   className="sm:col-span-2"
                 />
 
+                <Field
+                  name="projectAddress"
+                  label="Project Address"
+                  placeholder="Project/Site Address"
+                  className="sm:col-span-2"
+                />
+
                 <Textarea
                   name="message"
                   label="Project notes"
-                  placeholder="Site address, current docs, what you need from us"
+                  placeholder="Current docs, what you need from us"
                   className="sm:col-span-2"
                 />
 
