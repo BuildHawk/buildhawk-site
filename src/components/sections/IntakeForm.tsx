@@ -167,6 +167,7 @@ export default function IntakeForm() {
       projectType: data.get("projectType"),
       stage: data.get("stage"),
       valueRange: data.get("valueRange"),
+      projectAddress: data.get("projectAddress"),
       message: data.get("message"),
     };
   
