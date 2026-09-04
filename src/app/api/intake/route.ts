@@ -13,6 +13,7 @@ type IntakePayload = {
   projectType?: string;
   stage?: string;
   valueRange?: string;
+  projectAddress?: string;
   message?: string;
 };
 
