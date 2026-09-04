@@ -368,7 +368,7 @@ export default function IntakeForm() {
                 <Field
                   name="projectAddress"
                   label="Project Address"
-                  placeholder="Project/Site Address"
+                  placeholder="Enter Project/Site Address"
                   className="sm:col-span-2"
                 />
 
